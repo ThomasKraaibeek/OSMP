@@ -5,101 +5,72 @@
 #include <string.h>
 #include <stdlib.h>
 
+char* itos(int value);
+
 int main(int argc,char** argv) {
 
-    char buf[100];
+    //konvertiere string in int
+    int iter = atoi(argv[1]);
 
-
-
+    //Ausgabe der Argumente
     printf("#args %d\n",argc);
     for (int i = 0; i < argc; i++)
     {
         //printf("argv[%d]: %s\n", i, argv[i]);
     }
-    int iter = atoi(argv[1]);
-    //printf("Iter: %d\n",iter);
-    pid_t pids[iter];
+
+    //Array für die PID der Kinder
+    //pid_t pids[iter];
     pid_t pid;
-    for(int i=0;i<iter;i++){
+
+    for(int i=0; i<iter; i++){
         pid = fork();
+
+        //Fehlerbehandlung
         if(pid<0){
-            //Fehler
             printf("Fehler bei der Prozessaufteilung: %s\n",strerror(errno));
             return 1;
         }
+
+        //Child
         if(pid==0){
-            //Child
-            sprintf(buf, "%d", i);
-            execlp("./osmpexecutable",buf ,NULL);
+
+            //konvertiere int in string. Anzahl der zu erzeugenden Kindprozesse
+            char* istring = itos(i);
+            execlp("./osmpexecutable", istring, NULL);
+
+            printf("Fehler bei der Prozessaufteilung: %s\n",strerror(errno));
             return 1;
         }
+
+        //Parent
         else if(pid>0) {
 
-            //Parentpid immer gleich
-            printf("p_pid: %d\n", getpid());
-            pids[i] = pid;
-            //wait(NULL);
-           //printf("Parent");
+            //speichere pid der einzelnen Kinder
+            //pids[i] = pid;
         }
 
     }
 
+    //Warte auf alle einzelnen Kinder. -1 = Warte nicht hintereinander sondern parallel
+    for(int i=0; i < iter; i++){
 
-
-    for(int i=0;i<iter;i++){
-        waitpid(-1,NULL,0);
-
+        waitpid(-1, NULL, 0);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
-    pid_t pid;
-    pid=fork();
-    if(pid<0){
-        //Fehler
-        printf("Fehler bei der Prozessaufteilung\n");
-    }
-    if(pid==0){
-        //Child
-
-        printf("pid_child: %d\n", getpid());
-
-        for(int i=0;i<5;i++) {
-            printf("Childprocess [%d]\n", i);
-            sleep(1);
-            execl("../EchoAll/echoall","Hello","World","123",(char*)NULL);
-            getcwd(buffer, 1024);
-            printf("cwd: %s\n", buffer);
-            //execlp("./a.out","",NULL);
-            printf("Exec.. returned, ERROR: %s\n",strerror(errno));
-            //execv("/home/ms/g/go744355/Schreibtisch/bs_praktikum/Praktikum1/EchoAll/echoall", arguments);
-
-        }
-    }
-    else if(pid>0) {
-        //Parent
-
-        printf("pid_parent: %d\n", getpid());
-
-        for(int i=0;i<5;i++) {
-            printf("Parentprocess [%d]\n", i);
-            waitpid(pid,NULL,0);
-
-        }
-    }*/
     return 0;
+}
+
+/**
+ * @brief Konvertiert Interger zum String
+ * Diese Funktion erhält als Übergabeparameter den Integer den er zum String konvertieren soll. Der konvertierte Wert wird dann zurückgegeben.
+ *
+ * @param value Intergerwert, welcher konvertiert werden soll
+ * @return konvertierter Wert als String (char*)
+ */
+char* itos(int value){
+
+    char* string = malloc(sizeof(int));
+    sprintf(string, "%d", value);
+    return string;
 }
