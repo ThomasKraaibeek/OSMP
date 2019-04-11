@@ -1,0 +1,3 @@
+/home/ms/g/go744355/Schreibtisch/bs_praktikum/Praktikum1/ForkSleep/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/ms/g/go744355/Schreibtisch/bs_praktikum/Praktikum1/ForkSleep/cmake-build-debug/CMakeFiles/ForkSleep.dir
+/home/ms/g/go744355/Schreibtisch/bs_praktikum/Praktikum1/ForkSleep/cmake-build-debug/CMakeFiles/edit_cache.dir

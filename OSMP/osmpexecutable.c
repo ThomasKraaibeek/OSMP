@@ -7,8 +7,7 @@ int main(int argc,char** argv){
 	//printf("Waiting for %s\n",argv[0]);
 
 	if(atoi(argv[0]) == 2)
-		sleep(2);
-	
+		sleep(20);
 	printf("Hello World No. %s\n",(argv[0]));
 	return 1;
 }

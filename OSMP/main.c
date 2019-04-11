@@ -47,7 +47,8 @@ int main(int argc,char** argv) {
 
 
     for(int i=0;i<iter;i++){
-        waitpid(pids[i],NULL,0);
+        waitpid(-1,NULL,0);
+
     }
 
 

@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ms/g/go744355/Schreibtisch/bs_praktikum/Praktikum1/ForkSleep/main.c
+stdio.h
+-
+unistd.h
+-
+wait.h
+-
+errno.h
+-
+string.h
+-
+
