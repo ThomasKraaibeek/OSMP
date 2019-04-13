@@ -8,12 +8,15 @@
 char* itos(int value);
 
 int main(int argc,char** argv) {
-
+    if(argc<2){
+	printf("Syntax: osmprun [int] 	, [int]: Zahl der Prozesse, die erzeugt werden sollen\n");
+	return 1;
+    }
     //konvertiere string in int
     int iter = atoi(argv[1]);
 
     //Ausgabe der Argumente
-    printf("#args %d\n",argc);
+    //printf("#args %d\n",argc);
     for (int i = 0; i < argc; i++)
     {
         //printf("argv[%d]: %s\n", i, argv[i]);
@@ -39,7 +42,7 @@ int main(int argc,char** argv) {
             char* istring = itos(i);
             execlp("./osmpexecutable", istring, NULL);
 
-            printf("Fehler bei der Prozessaufteilung: %s\n",strerror(errno));
+            printf("Fehler bei execlp ./osmpexecutable : %s\n",strerror(errno));
             return 1;
         }
 
