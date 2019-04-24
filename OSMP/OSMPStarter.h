@@ -15,7 +15,7 @@
 
 #include <sys/mman.h>
 #include <sys/stat.h>        /* For mode constants */
-#include <fcntl.h>
+#include <fcntl.h>           /* for O_* constans*/
 #include <sys/types.h>
 
 #define SHMSIZE 100
