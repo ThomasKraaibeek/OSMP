@@ -5,6 +5,13 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <sys/mman.h>
+#include <sys/stat.h>        /* For mode constants */
+#include <fcntl.h>
+#include <sys/types.h>
+
+#define SHMSIZE 100
+
 char* itos(int value);
 
 int main(int argc,char** argv) {
@@ -25,6 +32,28 @@ int main(int argc,char** argv) {
     //Array für die PID der Kinder
     //pid_t pids[iter];
     pid_t pid;
+
+
+
+
+    int fd = shm_open("/myshm", O_CREAT | O_RDWR, 0666);
+
+    int ftrunc = ftruncate(fd, SHMSIZE);
+
+    if(ftrunc == -1){
+        printf("Fehler bei der ftruncate %s\n",strerror(errno));
+        return 1;
+    }
+
+    void* map = mmap(0, SHMSIZE, PROT_WRITE, MAP_SHARED, fd, 0);
+
+    if(map == MAP_FAILED){
+        printf("Fehler beim Mapping: %s\n",strerror(errno));
+        return 1;
+    }
+
+    sprintf( map, "%s", "Hallo Welt\n");
+
 
     for(int i=0; i<iter; i++){
         pid = fork();
