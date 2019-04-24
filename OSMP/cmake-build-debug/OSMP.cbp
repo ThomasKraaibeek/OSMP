@@ -78,7 +78,16 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/gurur/Schreibtisch/BS/g17/OSMP/main.c">
+		<Unit filename="/home/gurur/Schreibtisch/BS/g17/OSMP/OSMPLib.c">
+			<Option target="OSMP"/>
+		</Unit>
+		<Unit filename="/home/gurur/Schreibtisch/BS/g17/OSMP/OSMPLib.h">
+			<Option target="OSMP"/>
+		</Unit>
+		<Unit filename="/home/gurur/Schreibtisch/BS/g17/OSMP/OSMPStarter.c">
+			<Option target="OSMP"/>
+		</Unit>
+		<Unit filename="/home/gurur/Schreibtisch/BS/g17/OSMP/OSMPStarter.h">
 			<Option target="OSMP"/>
 		</Unit>
 		<Unit filename="/home/gurur/Schreibtisch/BS/g17/OSMP/CMakeLists.txt">

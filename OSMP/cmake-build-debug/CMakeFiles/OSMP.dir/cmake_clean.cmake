@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/OSMP.dir/main.c.o"
+  "CMakeFiles/OSMP.dir/OSMPStarter.c.o"
+  "CMakeFiles/OSMP.dir/OSMPLib.c.o"
   "OSMP.pdb"
   "OSMP"
 )

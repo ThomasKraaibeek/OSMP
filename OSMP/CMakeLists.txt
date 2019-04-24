@@ -3,4 +3,4 @@ project(OSMP C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(OSMP main.c)
+add_executable(OSMP OSMPStarter.c OSMPLib.c OSMPLib.h OSMPStarter.h)

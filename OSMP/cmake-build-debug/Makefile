@@ -123,32 +123,59 @@ OSMP/fast:
 	$(MAKE) -f CMakeFiles/OSMP.dir/build.make CMakeFiles/OSMP.dir/build
 .PHONY : OSMP/fast
 
-main.o: main.c.o
+OSMPLib.o: OSMPLib.c.o
 
-.PHONY : main.o
+.PHONY : OSMPLib.o
 
 # target to build an object file
-main.c.o:
-	$(MAKE) -f CMakeFiles/OSMP.dir/build.make CMakeFiles/OSMP.dir/main.c.o
-.PHONY : main.c.o
+OSMPLib.c.o:
+	$(MAKE) -f CMakeFiles/OSMP.dir/build.make CMakeFiles/OSMP.dir/OSMPLib.c.o
+.PHONY : OSMPLib.c.o
 
-main.i: main.c.i
+OSMPLib.i: OSMPLib.c.i
 
-.PHONY : main.i
+.PHONY : OSMPLib.i
 
 # target to preprocess a source file
-main.c.i:
-	$(MAKE) -f CMakeFiles/OSMP.dir/build.make CMakeFiles/OSMP.dir/main.c.i
-.PHONY : main.c.i
+OSMPLib.c.i:
+	$(MAKE) -f CMakeFiles/OSMP.dir/build.make CMakeFiles/OSMP.dir/OSMPLib.c.i
+.PHONY : OSMPLib.c.i
 
-main.s: main.c.s
+OSMPLib.s: OSMPLib.c.s
 
-.PHONY : main.s
+.PHONY : OSMPLib.s
 
 # target to generate assembly for a file
-main.c.s:
-	$(MAKE) -f CMakeFiles/OSMP.dir/build.make CMakeFiles/OSMP.dir/main.c.s
-.PHONY : main.c.s
+OSMPLib.c.s:
+	$(MAKE) -f CMakeFiles/OSMP.dir/build.make CMakeFiles/OSMP.dir/OSMPLib.c.s
+.PHONY : OSMPLib.c.s
+
+OSMPStarter.o: OSMPStarter.c.o
+
+.PHONY : OSMPStarter.o
+
+# target to build an object file
+OSMPStarter.c.o:
+	$(MAKE) -f CMakeFiles/OSMP.dir/build.make CMakeFiles/OSMP.dir/OSMPStarter.c.o
+.PHONY : OSMPStarter.c.o
+
+OSMPStarter.i: OSMPStarter.c.i
+
+.PHONY : OSMPStarter.i
+
+# target to preprocess a source file
+OSMPStarter.c.i:
+	$(MAKE) -f CMakeFiles/OSMP.dir/build.make CMakeFiles/OSMP.dir/OSMPStarter.c.i
+.PHONY : OSMPStarter.c.i
+
+OSMPStarter.s: OSMPStarter.c.s
+
+.PHONY : OSMPStarter.s
+
+# target to generate assembly for a file
+OSMPStarter.c.s:
+	$(MAKE) -f CMakeFiles/OSMP.dir/build.make CMakeFiles/OSMP.dir/OSMPStarter.c.s
+.PHONY : OSMPStarter.c.s
 
 # Help Target
 help:
@@ -159,9 +186,12 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... OSMP"
 	@echo "... edit_cache"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... OSMPLib.o"
+	@echo "... OSMPLib.i"
+	@echo "... OSMPLib.s"
+	@echo "... OSMPStarter.o"
+	@echo "... OSMPStarter.i"
+	@echo "... OSMPStarter.s"
 .PHONY : help
 
 

@@ -4,7 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/home/gurur/Schreibtisch/BS/g17/OSMP/main.c" "/home/gurur/Schreibtisch/BS/g17/OSMP/cmake-build-debug/CMakeFiles/OSMP.dir/main.c.o"
+  "/home/gurur/Schreibtisch/BS/g17/OSMP/OSMPLib.c" "/home/gurur/Schreibtisch/BS/g17/OSMP/cmake-build-debug/CMakeFiles/OSMP.dir/OSMPLib.c.o"
+  "/home/gurur/Schreibtisch/BS/g17/OSMP/OSMPStarter.c" "/home/gurur/Schreibtisch/BS/g17/OSMP/cmake-build-debug/CMakeFiles/OSMP.dir/OSMPStarter.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
