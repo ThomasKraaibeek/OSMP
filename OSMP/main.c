@@ -11,13 +11,14 @@
 #include <sys/types.h>
 
 #define SHMSIZE 100
+#define SHMNAME "/myshm"
 
 char* itos(int value);
 
 int main(int argc,char** argv) {
     if(argc<2){
-	printf("Syntax: osmprun [int] 	, [int]: Zahl der Prozesse, die erzeugt werden sollen\n");
-	return 1;
+	    printf("Syntax: osmprun [int] 	, [int]: Zahl der Prozesse, die erzeugt werden sollen\n");
+	    return 1;
     }
     //konvertiere string in int
     int iter = atoi(argv[1]);
@@ -36,23 +37,22 @@ int main(int argc,char** argv) {
 
 
 
-    int fd = shm_open("/myshm", O_CREAT | O_RDWR, 0666);
+    int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
 
     int ftrunc = ftruncate(fd, SHMSIZE);
 
     if(ftrunc == -1){
-        printf("Fehler bei der ftruncate %s\n",strerror(errno));
+        printf("Fehler bei ftruncate %s\n",strerror(errno));
         return 1;
     }
 
-    void* map = mmap(0, SHMSIZE, PROT_WRITE, MAP_SHARED, fd, 0);
+    void* map = mmap(0, SHMSIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
     if(map == MAP_FAILED){
         printf("Fehler beim Mapping: %s\n",strerror(errno));
         return 1;
     }
 
-    sprintf( map, "%s", "Hallo Welt\n");
 
 
     for(int i=0; i<iter; i++){
@@ -66,18 +66,24 @@ int main(int argc,char** argv) {
 
         //Child
         if(pid==0){
-
             //konvertiere int in string. Anzahl der zu erzeugenden Kindprozesse
-            char* istring = itos(i);
-            execlp("./osmpexecutable", istring, NULL);
+            //char* istring = itos(i);
+            //execlp("./osmpexecutable", istring, NULL);
+            //printf("Fehler bei execlp ./osmpexecutable : %s\n",strerror(errno));
 
-            printf("Fehler bei execlp ./osmpexecutable : %s\n",strerror(errno));
+
+            printf("%s",(char*)map);
+            sleep(5);
+            printf("%s",(char*)map);
+
+            shm_unlink(SHMNAME);
             return 1;
         }
 
         //Parent
         else if(pid>0) {
-
+            sleep(4);
+            sprintf( map, "%s", "Hallo Welt\n");
             //speichere pid der einzelnen Kinder
             //pids[i] = pid;
         }
