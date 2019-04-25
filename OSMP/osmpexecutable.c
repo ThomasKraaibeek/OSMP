@@ -3,11 +3,16 @@
 
 int main(int argc, char** argv){
 
-    int rv,size;
+    int rv,size=0,rank;
 
     rv = OSMP_Init(&argc,&argv);
     rv = OSMP_Size(&size);
-    printf("%d\n",(int)size);
+    rv = OSMP_Rank(&rank);
+    rv = OSMP_Finalize();
+
+    //rv = OSMP_Send();
+    //rv = OSMP_Recv();
+    printf("Size: %d\n",(int)size);
 
 	return 1;
 }

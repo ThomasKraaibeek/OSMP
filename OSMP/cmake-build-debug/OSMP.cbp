@@ -8,33 +8,32 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug"/>
+				<Option working_dir="/home/thomas/Desktop/g17/OSMP/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug"/>
+				<Option working_dir="/home/thomas/Desktop/g17/OSMP/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="OSMP">
-				<Option output="/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/OSMP" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug"/>
+				<Option output="/home/thomas/Desktop/g17/OSMP/cmake-build-debug/OSMP" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/thomas/Desktop/g17/OSMP/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/cuda/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
@@ -42,20 +41,19 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 OSMP"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 OSMP"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="OSMP/fast">
-				<Option output="/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/OSMP" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug"/>
+				<Option output="/home/thomas/Desktop/g17/OSMP/cmake-build-debug/OSMP" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/thomas/Desktop/g17/OSMP/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/cuda/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
@@ -63,39 +61,39 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 OSMP/fast"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 OSMP/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug"/>
+				<Option working_dir="/home/thomas/Desktop/g17/OSMP/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/thomas/Desktop/g17/OSMP/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/ms/g/go744355/Schreibtisch/g17/OSMP/OSMP.h">
+		<Unit filename="/home/thomas/Desktop/g17/OSMP/OSMP.h">
 			<Option target="OSMP"/>
 		</Unit>
-		<Unit filename="/home/ms/g/go744355/Schreibtisch/g17/OSMP/OSMPLib.c">
+		<Unit filename="/home/thomas/Desktop/g17/OSMP/OSMPLib.c">
 			<Option target="OSMP"/>
 		</Unit>
-		<Unit filename="/home/ms/g/go744355/Schreibtisch/g17/OSMP/OSMPLib.h">
+		<Unit filename="/home/thomas/Desktop/g17/OSMP/OSMPLib.h">
 			<Option target="OSMP"/>
 		</Unit>
-		<Unit filename="/home/ms/g/go744355/Schreibtisch/g17/OSMP/OSMPStarter.c">
+		<Unit filename="/home/thomas/Desktop/g17/OSMP/OSMPStarter.c">
 			<Option target="OSMP"/>
 		</Unit>
-		<Unit filename="/home/ms/g/go744355/Schreibtisch/g17/OSMP/OSMPStarter.h">
+		<Unit filename="/home/thomas/Desktop/g17/OSMP/OSMPStarter.h">
 			<Option target="OSMP"/>
 		</Unit>
-		<Unit filename="/home/ms/g/go744355/Schreibtisch/g17/OSMP/CMakeLists.txt">
+		<Unit filename="/home/thomas/Desktop/g17/OSMP/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>

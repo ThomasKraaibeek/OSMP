@@ -9,7 +9,6 @@
 
 int counter = 0;
 
-//TODO ausimplementieren
 int OSMP_Init(int *argc, char ***argv){
     int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
     if(fd==-1){
@@ -19,7 +18,6 @@ int OSMP_Init(int *argc, char ***argv){
 
     //Konfiguriere die Größe des Speichers
     int ftrunc = ftruncate(fd, OSMP_MAX_SLOTS); //TODO OSMP_MAX_SLOTS richtig?
-
     //Fehlerbehandlung, falls ftruncate nicht funktioniert hat
     if (ftrunc == -1) {
         printf("Fehler bei ftruncate %s\n", strerror(errno));
@@ -28,7 +26,6 @@ int OSMP_Init(int *argc, char ***argv){
 
     //Mappe den erzeugten shared memory in den Prozessspeicher
     void *map = mmap(0, OSMP_MAX_SLOTS, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
-
     //Fehlerbehandlung für das Mapping
     if (map == MAP_FAILED) {
         printf("Fehler beim Mapping: %s\n", strerror(errno));
