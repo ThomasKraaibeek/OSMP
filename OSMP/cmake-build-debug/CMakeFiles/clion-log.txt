@@ -1,4 +1,4 @@
-/home/gurur/Programme/clion-2019.1/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/gurur/Schreibtisch/BS/g17/OSMP
+/opt/clion-2018.3.4/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/ms/g/go744355/Schreibtisch/g17/OSMP
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/gurur/Schreibtisch/BS/g17/OSMP/cmake-build-debug
+-- Build files have been written to: /home/ms/g/go744355/Schreibtisch/g17/OSMP/cmake-build-debug
