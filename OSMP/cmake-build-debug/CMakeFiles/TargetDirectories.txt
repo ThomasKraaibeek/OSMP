@@ -1,3 +1,0 @@
-/home/thomas/Desktop/g17/OSMP/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/thomas/Desktop/g17/OSMP/cmake-build-debug/CMakeFiles/OSMP.dir
-/home/thomas/Desktop/g17/OSMP/cmake-build-debug/CMakeFiles/edit_cache.dir

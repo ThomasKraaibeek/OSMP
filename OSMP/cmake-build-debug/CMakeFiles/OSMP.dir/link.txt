@@ -1,1 +1,0 @@
-/usr/bin/cc -g   CMakeFiles/OSMP.dir/OSMPStarter.c.o CMakeFiles/OSMP.dir/OSMPLib.c.o  -o OSMP 
