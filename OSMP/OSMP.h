@@ -33,10 +33,10 @@
 
 typedef void* OSMP_Datatype;
 
-typedef void* OSMP_Request; // maximale Zahl der Nachrichten pro Prozess
-#define OSMP_MAX_MESSAGES_PROC   16   // maximale Anzahl der Nachrichten, die insgesamt vorhanden sein dürfen
-#define OSMP_MAX_SLOTS           256 // maximale Länge der Nutzlast einer Nachricht
-#define OSMP_MAX_PAYLOAD_LENGTH  1024
+typedef void* OSMP_Request;
+#define OSMP_MAX_MESSAGES_PROC   16   // maximale Zahl der Nachrichten pro Prozess
+#define OSMP_MAX_SLOTS           256  // maximale Anzahl der Nachrichten, die insgesamt vorhanden sein dürfen
+#define OSMP_MAX_PAYLOAD_LENGTH  1024 // maximale Länge der Nutzlast einer Nachricht
 
 int OSMP_Init(int *argc, char ***argv);
 int OSMP_Size(int *size);
