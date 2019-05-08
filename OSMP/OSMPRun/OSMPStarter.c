@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     }
 
     //Konfiguriere die Größe des Speichers
-    int ftrunc = ftruncate(fd, OSMP_MAX_SLOTS); //TODO OSMP_MAX_SLOTS richtig?
+    int ftrunc = ftruncate(fd, sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + iter * sizeof(process)); //TODO OSMP_MAX_SLOTS richtig?
     //Fehlerbehandlung, falls ftruncate nicht funktioniert hat
     if (ftrunc == -1) {
         printf("Fehler bei ftruncate %s\n", strerror(errno));

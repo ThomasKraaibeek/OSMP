@@ -23,6 +23,8 @@
 #ifndef OSMP_OSMPSTARTER_H
 #define OSMP_OSMPSTARTER_H
 
+#include "../OSMPLib/OSMPLib.h"
+
 
 #define SHMSIZE 100
 #define SHMNAME "/myshm"
