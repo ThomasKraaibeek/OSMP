@@ -8,6 +8,11 @@
 
 int counter = 0;
 
+void error(char* msg, ...){
+    printf("%s | %s\n", msg, strerror(errno));
+    exit(0);
+}
+
 int OSMP_Init(int *argc, char ***argv){
     int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
     if(fd==-1){
@@ -30,6 +35,9 @@ int OSMP_Init(int *argc, char ***argv){
         printf("Fehler beim Mapping: %s\n", strerror(errno));
         return OSMP_ERROR;
     }
+
+
+
 
 
     counter++;
