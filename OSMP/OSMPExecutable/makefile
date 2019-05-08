@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc -Wall -Wconversion -std=c99 -D_XOPEN_SOURCE=500
 OUTPUT=osmpexecutable
 SOURCE=osmpexecutable.c
 LIB=../OSMPLib/OSMPLib.a -lrt -lpthread

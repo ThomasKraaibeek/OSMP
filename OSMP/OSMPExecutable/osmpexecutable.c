@@ -1,5 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-#include "OSMP.h"
+#include "../OSMPLib/OSMPLib.h"
 
 int main(int argc, char** argv){
 

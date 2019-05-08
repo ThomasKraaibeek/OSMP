@@ -25,6 +25,12 @@
 
 
 #define SHMSIZE 100
+#define SHMNAME "/myshm"
+
+#define OSMP_MAX_MESSAGES_PROC   16   // maximale Zahl der Nachrichten pro Prozess
+#define OSMP_MAX_SLOTS           256  // maximale Anzahl der Nachrichten, die insgesamt vorhanden sein dürfen
+#define OSMP_MAX_PAYLOAD_LENGTH  1024 // maximale Länge der Nutzlast einer Nachricht
+
 
 char* itos(int value);
 
