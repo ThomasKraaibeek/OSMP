@@ -6,7 +6,7 @@
 
 shm* shm_start;
 
-int slots_init(int processAmount){
+int slots_init(unsigned int processAmount){
 
     //dynamische Arraygröße, da erst in Laufzeit bekannt wie viele processstructs benötigt werden.
     shm_start = malloc(sizeof(shm) + processAmount * sizeof(process));
@@ -38,7 +38,7 @@ int slots_init(int processAmount){
 
     for(int i = 0;i<OSMP_MAX_SLOTS;i++){
         shm_start->msg[i].src = -1;
-        shm_start->msg[i].len = -1;
+        shm_start->msg[i].len = 0; // besser 0 als -1? sonst inkompatibel mit dem Typ size_t
         memcpy(shm_start->msg[i].data,"\0",1);
 
         if(i==OSMP_MAX_SLOTS-1){
@@ -48,7 +48,7 @@ int slots_init(int processAmount){
         }
     }
 
-
+    return  OSMP_SUCCESS;
 }
 
 int main(int argc, char **argv) {
@@ -58,10 +58,13 @@ int main(int argc, char **argv) {
     }
 
     //konvertiere string in int
-    int processAmount = atoi(argv[1]);
-    if (processAmount >=  10000 || processAmount < 0) {
+    int inputprocessAmount = atoi(argv[1]);
+    if (inputprocessAmount >=  10000 || inputprocessAmount < 0) {
         error("[OSMPStarter.c] Anzahl der Prozesse muss zwischen 1 und %ld liegen\n", sizeof(int)/2);
     }
+
+    //Sonst warnung wegen Vorzeichen
+    unsigned int processAmount = (unsigned int)inputprocessAmount;
 
     //Ausgabe der Argumente
     //printf("#args %d\n",argc);
@@ -88,8 +91,9 @@ int main(int argc, char **argv) {
         error("[OSMPStarter.c] Fehler bei shm_open");
     }
 
+    //todo unsigned int richtig?
     //Konfiguriere die Größe des Speichers
-    int ftrunc = ftruncate(fd, sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process)); //TODO OSMP_MAX_SLOTS richtig?
+    int ftrunc = ftruncate(fd, (unsigned int)(sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process))); //TODO OSMP_MAX_SLOTS richtig?
     //Fehlerbehandlung, falls ftruncate nicht funktioniert hat
     if (ftrunc == -1) {
         error("[OSMPStarter.c] Fehler bei ftruncate");

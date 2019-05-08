@@ -6,7 +6,7 @@
 
 int main(int argc, char** argv){
 
-    int rv,size=0,rank;
+    int rv = 0, size = 0, rank = 0;
 
     rv = OSMP_Init(&argc,&argv);
     rv = OSMP_Size(&size);
