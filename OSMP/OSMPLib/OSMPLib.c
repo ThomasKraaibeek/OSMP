@@ -4,7 +4,6 @@
 
 
 #include "OSMPLib.h"
-#include "OSMP.h"
 #include <stdio.h>
 
 int counter = 0;
@@ -39,7 +38,7 @@ int OSMP_Init(int *argc, char ***argv){
 
 //TODO ausimplementieren
 int OSMP_Size(int *size){
-
+    printf("TEST");
     *size = counter;
 
     return OSMP_SUCCESS;
