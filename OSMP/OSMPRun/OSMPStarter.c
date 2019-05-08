@@ -8,9 +8,14 @@ shm* shm_start;
 
 int slots_init(int processAmount){
 
+    //dynamische Arraygröße, da erst in Laufzeit bekannt wie viele processstructs benötigt werden.
+    shm_start = malloc(sizeof(shm) + processAmount * sizeof(process));
+    //todo fehlerbahndlung
+
     //EMPTYMESSAGE, setze first und last als INIT
     shm_start->emptymsg.firstmsg = 0;
     shm_start->emptymsg.lastmsg = OSMP_MAX_SLOTS;
+
 
     /*
      * @TODO Semaphore Init
@@ -29,6 +34,7 @@ int slots_init(int processAmount){
         shm_start->p[i].hasmsg = y;
         shm_start->p[i].mutex = z;*/
     }
+
 
     for(int i = 0;i<OSMP_MAX_SLOTS;i++){
         shm_start->msg[i].src = -1;
@@ -132,6 +138,8 @@ int main(int argc, char **argv) {
 
         waitpid(-1, NULL, 0);
     }
+
+    free(shm_start);
 
     return 0;
 }
