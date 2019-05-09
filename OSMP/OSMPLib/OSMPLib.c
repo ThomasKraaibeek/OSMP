@@ -8,6 +8,8 @@
 
 //SHM Struct
 shm* shm_start;
+sem_t mutex;
+sem_t emptyslots;
 
 void error(char* msg, ...){
     printf("%s | %s\n", msg, strerror(errno));
@@ -78,6 +80,22 @@ int OSMP_Rank(int *rank){
  * @return
  */
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
+
+   /* sem_init(emptyslots, 1, 256);
+    sem_init(mutex, 1, 1);
+
+
+    sem_wait(emptyslots);
+    sem_wait(mutex);
+
+    //FALSCH
+    memcpy(shm_start->emptymsg.firstmsg, shm_start->msg->nextmsg, 1);
+
+    sem_post(mutex);
+    sem_post(emptyslots);
+
+*/
+
 
     printf("Hello World4\n");
     return OSMP_SUCCESS;
