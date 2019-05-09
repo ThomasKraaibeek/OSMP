@@ -10,18 +10,20 @@ int slots_init(unsigned int processAmount){
 
     //dynamische Arraygröße, da erst in Laufzeit bekannt wie viele processstructs benötigt werden.
     shm_start = malloc(sizeof(shm) + processAmount * sizeof(process));
+    if(shm_start == NULL){
+        error("Fehler bei alloc: Shared-Memory\n");
+    }
+
     //todo fehlerbahndlung
 
     //EMPTYMESSAGE, setze first und last als INIT
     shm_start->emptymsg.firstmsg = 0;
     shm_start->emptymsg.lastmsg = OSMP_MAX_SLOTS;
 
-
     /*
      * @TODO Semaphore Init
      * shm_start->emptymsg.mutex etc.
      * */
-
 
     //struct process | Array aller Prozesse als Structs | Init all -1
     for(int i=0;i<processAmount;i++){
@@ -34,7 +36,6 @@ int slots_init(unsigned int processAmount){
         shm_start->p[i].hasmsg = y;
         shm_start->p[i].mutex = z;*/
     }
-
 
     for(int i = 0;i<OSMP_MAX_SLOTS;i++){
         shm_start->msg[i].src = -1;
@@ -75,16 +76,10 @@ int main(int argc, char **argv) {
     pid_t pid;
 
 
-
-
     slots_init(processAmount);
 
 
-
-
-
     //Erzeuge shared memory. 2. Argument: Zugriffsrechte der Prozesse, 3. Argument: Zugriffsrechte der Benutzer
-    //@TODO Fehlerbehandlung auslagern
     //@TODO Rechte?
     int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
     if(fd==-1){
@@ -100,9 +95,9 @@ int main(int argc, char **argv) {
     }
 
     //Mappe den erzeugten shared memory in den Prozessspeicher
-    void *map = mmap(0, OSMP_MAX_SLOTS, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
+    shm_start = mmap(0, OSMP_MAX_SLOTS, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
     //Fehlerbehandlung für das Mapping
-    if (map == MAP_FAILED) {
+    if (shm_start == MAP_FAILED) {
         error("[OSMPStarter.c] Fehler beim Mapping");
     }
 
@@ -132,7 +127,9 @@ int main(int argc, char **argv) {
             if (i + 1 < processAmount) {
                 continue;
             }
-            sprintf(map, "%s", "Hallo Welt");
+
+            memcpy(shm_start->msg->data, "s", 1);
+            //sprintf(shm_start, "%s", "Hallo Welt");
         }
 
     }
@@ -143,7 +140,8 @@ int main(int argc, char **argv) {
         waitpid(-1, NULL, 0);
     }
 
-    free(shm_start);
+    //shm_unlink(SHMNAME);
+    //free(shm_start);
 
     return 0;
 }
