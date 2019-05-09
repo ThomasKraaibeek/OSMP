@@ -16,6 +16,7 @@ int main(int argc, char** argv){
     //rv = OSMP_Send();
     //rv = OSMP_Recv();
     printf("Size: %d\n",(int)size);
+    printf("Rank: %d\n", rank);
 
 	return 1;
 }

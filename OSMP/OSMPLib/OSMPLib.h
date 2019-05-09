@@ -35,6 +35,7 @@ typedef void* OSMP_Request;
 typedef struct{
     int src;
     char data[OSMP_MAX_PAYLOAD_LENGTH];
+    OSMP_Datatype type;
     size_t len;
     int nextmsg;
 } message;
@@ -58,7 +59,9 @@ typedef struct{
 typedef struct{
     process emptymsg;
     message msg[OSMP_MAX_SLOTS];
+    int processsAmount;
     process p[];
+
 }shm;
 
 
