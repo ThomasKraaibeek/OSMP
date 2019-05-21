@@ -8,22 +8,21 @@ shm* shm_start;
 
 int slots_init(unsigned int processAmount){
 
-    //dynamische Arraygröße, da erst in Laufzeit bekannt wie viele processstructs benötigt werden.
-    shm_start = malloc(sizeof(shm) + processAmount * sizeof(process));
-    if(shm_start == NULL){
-        error("Fehler bei alloc: Shared-Memory\n");
-    }
-
-    //todo fehlerbahndlung
-
     //EMPTYMESSAGE, setze first und last als INIT
     shm_start->emptymsg.firstmsg = 0;
     shm_start->emptymsg.lastmsg = OSMP_MAX_SLOTS;
 
-    /*
-     * @TODO Semaphore Init
-     * shm_start->emptymsg.mutex etc.
-     * */
+    //sem_init(sem,!=0: zwischen prozessen,initwert)
+    if(sem_init(shm_start->emptymsg->free_slots,1,OSMP_MAX_SLOTS){
+	    error("[OSMPRun.c] sem_init Fehler");
+	    return OSMP_ERROR;
+     }
+
+     if(sem_init(shm_start->emptymsg.mutex,1,1)){
+         error("[OSMPRun.c] sem_init Fehler");
+         return OSMP_ERROR;
+     }
+
 
     //struct process | Array aller Prozesse als Structs | Init all -1
     for(int i=0;i<processAmount;i++){
@@ -31,10 +30,21 @@ int slots_init(unsigned int processAmount){
         shm_start->p[i].lastmsg = -1;
         shm_start->p[i].pid = -1;
 
-        //@TODO Semaphore Init
-        /*shm_start->p[i].freeslots = x;
-        shm_start->p[i].hasmsg = y;
-        shm_start->p[i].mutex = z;*/
+
+        if(sem_init(shm_start->p[i].freeslots,1,OSMP_MAX_MESSAGES_PROC){
+            error("[OSMPRun.c] sem_init Fehler");
+            return OSMP_ERROR;
+        }
+
+        if(sem_init(shm_start->p[i].hasmsg,1,0)){
+            error("[OSMPRun.c] sem_init Fehler");
+            return OSMP_ERROR;
+        }
+
+        if(sem_init(shm_start->p[i].mutex,1,1)){ //Mutex init value 1, siehe Verbraucher Erzeuger Problem VL
+            error("[OSMPRun.c] sem_init Fehler");
+            return OSMP_ERROR;
+        }
     }
 
     for(int i = 0;i<OSMP_MAX_SLOTS;i++){
@@ -54,7 +64,7 @@ int slots_init(unsigned int processAmount){
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        printf("Syntax: osmprun [int] 	, [int]: Zahl der Prozesse, die erzeugt werden sollen\n");
+        printf("Syntax: osmprun [int] [./name]    , [int]: Zahl der Prozesse, die erzeugt werden sollen, [./name]: Name des Executables, welches ausgeführt werden soll\n");
         return 1;
     }
 
@@ -75,10 +85,6 @@ int main(int argc, char **argv) {
 
     pid_t pid;
 
-
-    slots_init(processAmount);
-
-
     //Erzeuge shared memory. 2. Argument: Zugriffsrechte der Prozesse, 3. Argument: Zugriffsrechte der Benutzer
     //@TODO Rechte?
     int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
@@ -86,7 +92,7 @@ int main(int argc, char **argv) {
         error("[OSMPStarter.c] Fehler bei shm_open");
     }
 
-    //todo unsigned int richtig?
+    //@TODO unsigned int richtig?
     //Konfiguriere die Größe des Speichers
     int ftrunc = ftruncate(fd, (unsigned int)(sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process))); //TODO OSMP_MAX_SLOTS richtig?
     //Fehlerbehandlung, falls ftruncate nicht funktioniert hat
@@ -100,6 +106,8 @@ int main(int argc, char **argv) {
     if (shm_start == MAP_FAILED) {
         error("[OSMPStarter.c] Fehler beim Mapping");
     }
+
+    slots_init(processAmount);
 
     //Forke "processAmount" mal
     for (int i = 0; i < processAmount; i++) {

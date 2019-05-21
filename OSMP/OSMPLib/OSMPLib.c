@@ -2,7 +2,6 @@
 // Created by gurur on 24.04.19.
 //
 
-
 #include "OSMPLib.h"
 #include <stdio.h>
 
@@ -16,6 +15,11 @@ void error(char* msg, ...){
     exit(0);
 }
 
+/**
+ * Erzeugen des Shared Memory, zuschneiden und mappen.
+ * @param 
+ * @return 1=success, 0=fail
+ */
 int OSMP_Init(int *argc, char ***argv){
     int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
     if(fd==-1){

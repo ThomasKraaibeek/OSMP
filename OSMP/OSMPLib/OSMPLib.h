@@ -38,6 +38,7 @@ typedef struct{
     OSMP_Datatype type;
     size_t len;
     int nextmsg;
+    
 } message;
 
 typedef struct{
