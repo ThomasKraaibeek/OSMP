@@ -21,24 +21,41 @@ void error(char* msg, ...){
  * @return 1=success, 0=fail
  */
 int OSMP_Init(int *argc, char ***argv){
+
+    //printf("anfang init. pamount: %d\n", argv[2]);
+
     int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
+
+    printf("fd: %d\n", fd);
+
     if(fd==-1){
         error("[OSMPLib.c] Fehler bei shm_open");
     }
 
-    //Konfiguriere die Größe des Speichers
-    int ftrunc = ftruncate(fd, OSMP_MAX_SLOTS); //TODO OSMP_MAX_SLOTS richtig?
-    //Fehlerbehandlung, falls ftruncate nicht funktioniert hat
-    if (ftrunc == -1) {
-        error("[OSMPLib.c] Fehler bei ftruncate");
+    struct stat *shm_stat = calloc(1, sizeof(struct stat));
+    if (shm_stat == NULL) {
+        error("[OSMPLib.c] Calloc fail");
     }
 
+    if(fstat(fd, shm_stat)!=0){
+        error("[OSMPLib.c] fstat fail");
+    }
+
+
+    size_t shm_size = shm_stat->st_size;
+
+    printf("shm_size: %ld\n", shm_size);
+    free(shm_stat);
+
     //Mappe den erzeugten shared memory in den Prozessspeicher
-    shm_start = mmap(0, OSMP_MAX_SLOTS, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
+    shm_start = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
     //Fehlerbehandlung für das Mapping
     if (shm_start == MAP_FAILED) {
+        printf("line: %d ", __LINE__ -3);
         error("[OSMPLib.c] Fehler beim Mapping");
     }
+
+    printf("Printing len: %ld",shm_start->msg->len);
 
 
 
@@ -73,6 +90,10 @@ int OSMP_Rank(int *rank){
 
     return OSMP_SUCCESS;
 
+}
+
+void OSMP_Test(OSMP_Datatype a){
+    printf("Test ausgabe________________________________");
 }
 
 /**

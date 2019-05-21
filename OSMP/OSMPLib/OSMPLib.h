@@ -32,6 +32,17 @@ typedef void* OSMP_Request;
 #define OSMP_MAX_SLOTS           256  // maximale Anzahl der Nachrichten, die insgesamt vorhanden sein dürfen
 #define OSMP_MAX_PAYLOAD_LENGTH  1024 // maximale Länge der Nutzlast einer Nachricht
 
+typedef short int OSMP_SHORT;
+typedef int OSMP_INT;
+typedef long int OSMP_LONG;
+typedef unsigned char OSMP_UNSIGNED_CHAR;
+typedef unsigned short int OSMP_UNSIGNED_SHORT;
+typedef unsigned int OSMP_UNSIGNED;
+typedef unsigned long int OSMP_UNSIGNED_LONG;
+typedef float OSMP_FLOAT;
+typedef double OSMP_DOUBLE;
+typedef char OSMP_BYTE;
+
 typedef struct{
     int src;
     char data[OSMP_MAX_PAYLOAD_LENGTH];
@@ -72,6 +83,7 @@ int OSMP_Rank(int *rank);
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest);
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *len);
 int OSMP_Finalize(void);
+void OSMP_Test(OSMP_Datatype a);
 
 
 void error(char* msg, ...);

@@ -13,12 +13,12 @@ int slots_init(unsigned int processAmount){
     shm_start->emptymsg.lastmsg = OSMP_MAX_SLOTS;
 
     //sem_init(sem,!=0: zwischen prozessen,initwert)
-    if(sem_init(shm_start->emptymsg->free_slots,1,OSMP_MAX_SLOTS){
+    if(sem_init(&shm_start->emptymsg.freeslots,1,OSMP_MAX_SLOTS)){
 	    error("[OSMPRun.c] sem_init Fehler");
 	    return OSMP_ERROR;
      }
 
-     if(sem_init(shm_start->emptymsg.mutex,1,1)){
+     if(sem_init(&shm_start->emptymsg.mutex,1,1)){
          error("[OSMPRun.c] sem_init Fehler");
          return OSMP_ERROR;
      }
@@ -31,17 +31,17 @@ int slots_init(unsigned int processAmount){
         shm_start->p[i].pid = -1;
 
 
-        if(sem_init(shm_start->p[i].freeslots,1,OSMP_MAX_MESSAGES_PROC){
+        if(sem_init(&shm_start->p[i].freeslots,1,OSMP_MAX_MESSAGES_PROC)){
             error("[OSMPRun.c] sem_init Fehler");
             return OSMP_ERROR;
         }
 
-        if(sem_init(shm_start->p[i].hasmsg,1,0)){
+        if(sem_init(&shm_start->p[i].hasmsg,1,0)){
             error("[OSMPRun.c] sem_init Fehler");
             return OSMP_ERROR;
         }
 
-        if(sem_init(shm_start->p[i].mutex,1,1)){ //Mutex init value 1, siehe Verbraucher Erzeuger Problem VL
+        if(sem_init(&shm_start->p[i].mutex,1,1)){ //Mutex init value 1, siehe Verbraucher Erzeuger Problem VL
             error("[OSMPRun.c] sem_init Fehler");
             return OSMP_ERROR;
         }
@@ -51,6 +51,7 @@ int slots_init(unsigned int processAmount){
         shm_start->msg[i].src = -1;
         shm_start->msg[i].len = 0; // besser 0 als -1? sonst inkompatibel mit dem Typ size_t
         memcpy(shm_start->msg[i].data,"\0",1);
+        //shm_start->msg[i].type = OSMP_INT;
 
         if(i==OSMP_MAX_SLOTS-1){
             shm_start->msg[i].nextmsg = -1;
@@ -100,19 +101,21 @@ int main(int argc, char **argv) {
         error("[OSMPStarter.c] Fehler bei ftruncate");
     }
 
+
+    printf("selbst ausgerechnet: %d\n", (unsigned int)(sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process)));
+
     //Mappe den erzeugten shared memory in den Prozessspeicher
-    shm_start = mmap(0, OSMP_MAX_SLOTS, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
+    shm_start = mmap(0, (unsigned int)(sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process)), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
     //Fehlerbehandlung für das Mapping
     if (shm_start == MAP_FAILED) {
         error("[OSMPStarter.c] Fehler beim Mapping");
     }
 
     slots_init(processAmount);
-
     //Forke "processAmount" mal
     for (int i = 0; i < processAmount; i++) {
         pid = fork();
-
+        printf("%d\n",pid);
         //Fehlerbehandlung
         if (pid < 0) {
             error("Fehler bei der Prozessaufteilung");
@@ -121,6 +124,8 @@ int main(int argc, char **argv) {
         //Child
         if (pid == 0) {
             //TODO direkt munmap?
+            //printf("ss%s\n",*argv[1]);
+            fflush(stdout);
             execlp(argv[2],*argv, NULL);
             error("Fehler bei execlp %s",argv[2]);
 
