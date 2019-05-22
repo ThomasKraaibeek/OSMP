@@ -116,7 +116,22 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
 
     //first=shm_start->emptymsg
     int first = shm_start->emptymsg.firstmsg;
-    
+    shm_start->emptymsg.firstmsg = shm_start->msg[first].nextmsg;
+
+    shm_start->msg[first].len = count;
+    shm_start->msg[first].type = datatype;
+    shm_start->msg[first].src = rank;
+    shm_start->msg[first].nextmsg = -1;
+
+    memccpy(shm_start->msg[first].data,buf,count);
+
+    if(shm_start->p[dest].firstmsg == -1){
+        shm_start->p[dest].firstmsg = first;
+    }else{
+        int last = shm_start->p[dest].lastmsg;
+        shm_start->msg[last].nextmsg = first;
+    }
+    shm_start->p[dest].last = first;
 
    /* sem_init(emptyslots, 1, 256);
     sem_init(mutex, 1, 1);
@@ -132,9 +147,6 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
     sem_post(emptyslots);
 
 */
-
-
-    printf("Hello World4\n");
     return OSMP_SUCCESS;
 
 }
