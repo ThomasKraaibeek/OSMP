@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
 
     //@TODO unsigned int richtig?
     //Konfiguriere die Größe des Speichers
-    int ftrunc = ftruncate(fd, (unsigned int)(sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process))); //TODO OSMP_MAX_SLOTS richtig?
+    int ftrunc = ftruncate(fd, (unsigned int)(sizeof(process) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process))); //TODO OSMP_MAX_SLOTS richtig?
     //Fehlerbehandlung, falls ftruncate nicht funktioniert hat
     if (ftrunc == -1) {
         error("[OSMPStarter.c] Fehler bei ftruncate");
@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
     //printf("selbst ausgerechnet: %d\n", (unsigned int)(sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process)));
 
     //Mappe den erzeugten shared memory in den Prozessspeicher
-    shm_start = mmap(0, (unsigned int)(sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process)), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
+    shm_start = mmap(0, (unsigned int)(sizeof(process) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process)), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
     //Fehlerbehandlung für das Mapping
     if (shm_start == MAP_FAILED) {
         error("[OSMPStarter.c] Fehler beim Mapping");

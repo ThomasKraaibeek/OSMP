@@ -52,6 +52,9 @@ int OSMP_Init(int *argc, char ***argv){
     processes = shm_size - (OSMP_MAX_SLOTS * sizeof(message))- (sizeof(process)) ; //sizeof(process) = emptyslot
     processes /= sizeof(process);
 
+
+    //printf("shmzise: %d, MaxSlots: %d, sizeof(message): %d, sizeof(process): %d, sizeof(emptyslot): %d, processes: %d ",shm_size, OSMP_MAX_SLOTS, sizeof(message),
+    //       sizeof(process), sizeof(emptyslot), processes);
     printf("Processes: %d", processes);
 
     //Mappe den erzeugten shared memory in den Prozessspeicher
