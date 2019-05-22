@@ -10,6 +10,8 @@ shm* shm_start;
 sem_t mutex;
 sem_t emptyslots;
 
+int processes = 0;
+
 void error(char* msg, ...){
     printf("%s | %s\n", msg, strerror(errno));
     exit(0);
@@ -47,6 +49,11 @@ int OSMP_Init(int *argc, char ***argv){
     //printf("shm_size: %ld\n", shm_size);
     free(shm_stat);
 
+    processes = shm_size - (OSMP_MAX_SLOTS * sizeof(message)) - (sizeof(process)); //sizeof(process) = emptyslot
+    processes /= sizeof(process);
+
+    //printf("Processes: %d", processes);
+
     //Mappe den erzeugten shared memory in den Prozessspeicher
     shm_start = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
     //Fehlerbehandlung für das Mapping
@@ -80,10 +87,8 @@ int OSMP_Size(int *size){
  */
 int OSMP_Rank(int *rank){
 
-    size_t s = sizeof(shm_start->p) / sizeof(shm_start->p[0]);
-
     //Über alle Prozesse iterieren, mit dem aktuellen die PID matchen
-    for (int i = 0; i < s; i++) {
+    for (int i = 0; i <= processes; i++) {
         if (shm_start->p[i].pid == getpid()) *rank = i;
     }
 
