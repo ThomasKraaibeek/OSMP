@@ -106,13 +106,17 @@ void OSMP_Test(OSMP_Datatype a){
 
 /**
  *
- * @param buf
- * @param count
+ * @param buf Nachricht
+ * @param count Anzahl der Elemente in der Nachricht
  * @param datatype
- * @param dest
+ * @param dest Zielprozess
  * @return
  */
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
+
+    //first=shm_start->emptymsg
+    int first = shm_start->emptymsg.firstmsg;
+    
 
    /* sem_init(emptyslots, 1, 256);
     sem_init(mutex, 1, 1);
