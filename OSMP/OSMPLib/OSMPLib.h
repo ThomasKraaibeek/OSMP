@@ -71,7 +71,7 @@ typedef struct{
 typedef struct{
     process emptymsg;
     message msg[OSMP_MAX_SLOTS];
-    int processsAmount;
+    int processAmount;
     process p[];
 
 }shm;

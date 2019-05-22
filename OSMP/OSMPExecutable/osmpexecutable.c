@@ -7,13 +7,13 @@
 int main(int argc, char** argv){
 
     int rv = 0, size = 0, rank = 0;
-    printf("im exec: %d\n", atoi(argv[2]));
+    //printf("im exec: %d\n", atoi(argv[2]));
     fflush(stdout);
 
     rv = OSMP_Init(&argc,&argv);
-  //  rv = OSMP_Size(&size);
-    //rv = OSMP_Rank(&rank);
-   // rv = OSMP_Finalize();
+    rv = OSMP_Size(&size);
+    rv = OSMP_Rank(&rank);
+    //rv = OSMP_Finalize();
 
     //OSMP_INT a = 5;
     //OSMP_Test(a);

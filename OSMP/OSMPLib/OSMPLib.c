@@ -26,7 +26,7 @@ int OSMP_Init(int *argc, char ***argv){
 
     int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
 
-    printf("fd: %d\n", fd);
+    //printf("fd: %d\n", fd);
 
     if(fd==-1){
         error("[OSMPLib.c] Fehler bei shm_open");
@@ -44,7 +44,7 @@ int OSMP_Init(int *argc, char ***argv){
 
     size_t shm_size = shm_stat->st_size;
 
-    printf("shm_size: %ld\n", shm_size);
+    //printf("shm_size: %ld\n", shm_size);
     free(shm_stat);
 
     //Mappe den erzeugten shared memory in den Prozessspeicher
@@ -55,11 +55,7 @@ int OSMP_Init(int *argc, char ***argv){
         error("[OSMPLib.c] Fehler beim Mapping");
     }
 
-    printf("Printing len: %ld",shm_start->msg->len);
-
-
-
-
+    //printf("Printing len: %ld",shm_start->msg->len);
 
     return OSMP_SUCCESS;
 }
@@ -71,7 +67,8 @@ int OSMP_Init(int *argc, char ***argv){
  */
 int OSMP_Size(int *size){
     // & -> Keine Warning mehr: Assignment make Integer from pointer without a cast
-    *size = shm_start->processsAmount;
+    *size = shm_start->processAmount;
+    //printf("ProcessAmount: %d",shm_start->processAmount);
 
     return OSMP_SUCCESS;
 
@@ -83,8 +80,10 @@ int OSMP_Size(int *size){
  */
 int OSMP_Rank(int *rank){
 
+    size_t s = sizeof(shm_start->p) / sizeof(shm_start->p[0]);
+
     //Über alle Prozesse iterieren, mit dem aktuellen die PID matchen
-    for (int i = 0; i < shm_start->processsAmount; i++) {
+    for (int i = 0; i < s; i++) {
         if (shm_start->p[i].pid == getpid()) *rank = i;
     }
 

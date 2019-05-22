@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
     }
 
 
-    printf("selbst ausgerechnet: %d\n", (unsigned int)(sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process)));
+    //printf("selbst ausgerechnet: %d\n", (unsigned int)(sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process)));
 
     //Mappe den erzeugten shared memory in den Prozessspeicher
     shm_start = mmap(0, (unsigned int)(sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process)), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
@@ -114,8 +114,9 @@ int main(int argc, char **argv) {
     slots_init(processAmount);
     //Forke "processAmount" mal
     for (int i = 0; i < processAmount; i++) {
+        shm_start->processAmount++;
         pid = fork();
-        printf("%d\n",pid);
+        //printf("%d\n",pid);
         //Fehlerbehandlung
         if (pid < 0) {
             error("Fehler bei der Prozessaufteilung");
@@ -124,6 +125,7 @@ int main(int argc, char **argv) {
         //Child
         if (pid == 0) {
             //TODO direkt munmap?
+            shm_start->p[i].pid = getpid();
             //printf("ss%s\n",*argv[1]);
             fflush(stdout);
             execlp(argv[2],*argv, NULL);
@@ -151,6 +153,8 @@ int main(int argc, char **argv) {
     for (int i = 0; i < processAmount; i++) {
 
         waitpid(-1, NULL, 0);
+        shm_start->processAmount--;
+
     }
 
     //shm_unlink(SHMNAME);
