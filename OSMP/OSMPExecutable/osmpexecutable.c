@@ -13,7 +13,7 @@ int main(int argc, char** argv){
     rv = OSMP_Init(&argc,&argv);
     rv = OSMP_Size(&size);
     rv = OSMP_Rank(&rank);
-    //rv = OSMP_Finalize();
+    rv = OSMP_Finalize();
 
     //OSMP_INT a = 5;
     //OSMP_Test(a);
@@ -21,7 +21,7 @@ int main(int argc, char** argv){
     //rv = OSMP_Send()
     //rv = OSMP_Recv();
     //printf("Size: %d\n",(int)size);
-    printf("Rank: %d\n", rank);
+    //printf("Rank: %d\n", rank);
     fflush(stdout);
 
 

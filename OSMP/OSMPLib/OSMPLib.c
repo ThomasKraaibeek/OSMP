@@ -10,7 +10,7 @@ shm* shm_start;
 sem_t mutex;
 sem_t emptyslots;
 
-int processes = 0;
+int processes = 0, rank = 0;
 
 void error(char* msg, ...){
     printf("%s | %s\n", msg, strerror(errno));
@@ -61,6 +61,7 @@ int OSMP_Init(int *argc, char ***argv){
         printf("line: %d ", __LINE__ -3);
         error("[OSMPLib.c] Fehler beim Mapping");
     }
+    OSMP_Rank(&rank);
 
     //printf("Printing len: %ld",shm_start->msg->len);
 
@@ -153,7 +154,38 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
  */
 int OSMP_Finalize(void){
 
-    shm_unlink(SHMNAME);
+    if(shm_start->p[rank].pid==getpid()){
+        //@TODO Semaphoren setzen
+        shm_start->p[rank].pid = -1;
+        shm_start->p[rank].firstmsg = -1;
+        shm_start->p[rank].lastmsg = -1;
+    }
+
+    int i = 0;
+
+    //Prüft, ob in der Menge der Prozesse noch welche vorhanden sind, welche nicht bereits auf -1 gesetzt wurden. Falls ja, break => i!= processes => Kein shm_unlink & Kein emptymsg auf -1
+    while(i<processes){
+        if(shm_start->p[i].pid!=-1)
+            break;
+        i++;
+    }
+    printf("\ti: %d\t rank: %d\n",i,rank);
+
+    if(i==processes){
+        //@TODO Semaphoren setzen
+        shm_start->emptymsg.firstmsg = -1;
+        shm_start->emptymsg.lastmsg = -1;
+    }
+
+    int result = munmap(shm_start, sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processes * sizeof(process));
+
+    if(i==processes){
+        printf("Unlinking SHM of Rank: %d\n",rank);
+        shm_start = shm_unlink(SHMNAME);
+    }
+
+
+
     return OSMP_SUCCESS;
 
 }

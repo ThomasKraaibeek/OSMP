@@ -28,7 +28,7 @@ int slots_init(unsigned int processAmount){
     for(int i=0;i<processAmount;i++){
         shm_start->p[i].firstmsg = -1;
         shm_start->p[i].lastmsg = -1;
-        shm_start->p[i].pid = -1;
+        shm_start->p[i].pid = -2;
 
 
         if(sem_init(&shm_start->p[i].freeslots,1,OSMP_MAX_MESSAGES_PROC)){
