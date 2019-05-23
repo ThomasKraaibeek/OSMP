@@ -123,7 +123,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
     shm_start->msg[first].src = rank;
     shm_start->msg[first].nextmsg = -1;
 
-    memccpy(shm_start->msg[first].data,buf,count);
+    memcpy(shm_start->msg[first].data,buf,count);
 
     if(shm_start->p[dest].firstmsg == -1){
         shm_start->p[dest].firstmsg = first;
@@ -131,7 +131,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
         int last = shm_start->p[dest].lastmsg;
         shm_start->msg[last].nextmsg = first;
     }
-    shm_start->p[dest].last = first;
+    shm_start->p[dest].lastmsg = first;
 
    /* sem_init(emptyslots, 1, 256);
     sem_init(mutex, 1, 1);
