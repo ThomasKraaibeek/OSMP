@@ -106,13 +106,22 @@ int OSMP_Rank(int *rank){
  * @param count Anzahl der Elemente in der Nachricht
  * @param datatype
  * @param dest Zielprozess
- * @return  
+ * @return
  */
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
 
-    //first=shm_start->emptymsg
+    if(sem_wait(&shm_start->p[rank].freeslots)==-1)
+        error("[OSMPLib.c] sem_wait Error");
+    if(sem_wait(&shm_start->emptymsg.freeslots)==-1)
+        error("[OSMPLib.c] sem_wait Error");
+    if(sem_wait(&shm_start->emptymsg.mutex)==-1)
+        error("[OSMPLib.c] sem_wait Error");
+
     int first = shm_start->emptymsg.firstmsg;
     shm_start->emptymsg.firstmsg = shm_start->msg[first].nextmsg;
+
+    if(sem_post(&shm_start->emptymsg.mutex)==-1)
+        error("[OSMPLib.c] sem_post Error");
 
     shm_start->msg[first].len = count;
     shm_start->msg[first].type = datatype;
@@ -121,6 +130,9 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
 
     memcpy(shm_start->msg[first].data,buf,count);
 
+    if(sem_wait(&shm_start->p[rank].mutex)==-1)
+        error("[OSMPLib.c] sem_wait Error");
+
     if(shm_start->p[dest].firstmsg == -1){
         shm_start->p[dest].firstmsg = first;
     }else{
@@ -128,6 +140,12 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
         shm_start->msg[last].nextmsg = first;
     }
     shm_start->p[dest].lastmsg = first;
+
+    if(sem_post(&shm_start->p[rank].mutex))
+        error("[OSMPLib.c] sem_post Error");
+
+
+
 
     return OSMP_SUCCESS;
 
