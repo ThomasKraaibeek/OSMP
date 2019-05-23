@@ -145,8 +145,6 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
         error("[OSMPLib.c] sem_post Error");
 
 
-
-
     return OSMP_SUCCESS;
 
 }
@@ -162,7 +160,36 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
  */
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *len){
 
-    printf("Hello World5\n");
+    if(sem_wait(&shm_start->p[rank].fullslots)==-1)
+        error("[OSMPLib.c] sem_wait Error");
+
+    if(sem_wait(&shm_start->p[rank].mutex)==-1)
+        error("[OSMPLib.c] sem_wait Error");
+
+    int first = shm_start->p[rank].firstmsg;
+    shm_start->p[rank].firstmsg = shm_start->msg[first].nextmsg;
+
+    if(sem_post(&shm_start->p[rank].mutex)==-1)
+        error("[OSMPLib.c] sem_post Error");
+
+    memcpy(buf,shm_start->msg[first].data,shm_start->msg[first].len);
+
+    if(sem_wait(&shm_start->emptymsg.mutex)==-1)
+        error("[OSMPLib.c] sem_wait Error");
+
+    shm_start->msg[shm_start->emptymsg.lastmsg].nextmsg = first;
+    shm_start->emptymsg.lastmsg = first;
+
+    if(sem_post(&shm_start->emptymsg.mutex)==-1)
+        error("[OSMPLib.c] sem_post Error");
+
+    if(sem_post(&shm_start->emptymsg.freeslots)==-1)
+        error("[OSMPLib.c] sem_post Error");
+
+    if(sem_post(&shm_start->p[rank].freeslots)==-1)
+        error("[OSMPLib.c] sem_post Error");
+
+
     return OSMP_SUCCESS;
 
 }
