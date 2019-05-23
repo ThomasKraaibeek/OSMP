@@ -36,7 +36,7 @@ int slots_init(unsigned int processAmount){
             return OSMP_ERROR;
         }
 
-        if(sem_init(&shm_start->p[i].hasmsg,1,0)){
+        if(sem_init(&shm_start->p[i].fullslots,1,0)){
             error("[OSMPRun.c] sem_init Fehler");
             return OSMP_ERROR;
         }

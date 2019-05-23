@@ -57,7 +57,7 @@ typedef struct{
     int lastmsg;
     pid_t pid;
     sem_t freeslots;
-    sem_t hasmsg;
+    sem_t fullslots;
     sem_t mutex;
 } process;
 
@@ -83,7 +83,14 @@ int OSMP_Rank(int *rank);
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest);
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *len);
 int OSMP_Finalize(void);
-void OSMP_Test(OSMP_Datatype a);
+
+
+int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSMP_Request request);
+int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len, OSMP_Request request);
+int OSMP_Test(OSMP_Request request, int *flag);
+int OSMP_Wait (OSMP_Request request);
+int OSMP_CreateRequest(OSMP_Request *request);
+int OSMP_RemoveRequest(OSMP_Request *request);
 
 
 void error(char* msg, ...);

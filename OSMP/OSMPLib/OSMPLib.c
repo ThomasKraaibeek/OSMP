@@ -100,17 +100,13 @@ int OSMP_Rank(int *rank){
 
 }
 
-void OSMP_Test(OSMP_Datatype a){
-    printf("Test ausgabe________________________________");
-}
-
 /**
  *
  * @param buf Nachricht
  * @param count Anzahl der Elemente in der Nachricht
  * @param datatype
  * @param dest Zielprozess
- * @return
+ * @return  
  */
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
 
@@ -133,20 +129,6 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
     }
     shm_start->p[dest].lastmsg = first;
 
-   /* sem_init(emptyslots, 1, 256);
-    sem_init(mutex, 1, 1);
-
-
-    sem_wait(emptyslots);
-    sem_wait(mutex);
-
-    //FALSCH
-    memcpy(shm_start->emptymsg.firstmsg, shm_start->msg->nextmsg, 1);
-
-    sem_post(mutex);
-    sem_post(emptyslots);
-
-*/
     return OSMP_SUCCESS;
 
 }
@@ -202,9 +184,5 @@ int OSMP_Finalize(void){
         printf("Unlinking SHM of Rank: %d\n",rank);
         shm_start = shm_unlink(SHMNAME);
     }
-
-
-
     return OSMP_SUCCESS;
-
 }
