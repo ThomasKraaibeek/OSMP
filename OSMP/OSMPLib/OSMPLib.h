@@ -28,6 +28,17 @@
 typedef void* OSMP_Datatype;
 
 typedef void* OSMP_Request;
+typedef struct {
+    char* buffer;
+    int* length;
+    int* source;
+    OSMP_Datatype type;
+    int dest;
+    int count;
+    sem_t mutex;
+} IRequest;
+
+
 #define OSMP_MAX_MESSAGES_PROC   16   // maximale Zahl der Nachrichten pro Prozess
 #define OSMP_MAX_SLOTS           256  // maximale Anzahl der Nachrichten, die insgesamt vorhanden sein dürfen
 #define OSMP_MAX_PAYLOAD_LENGTH  1024 // maximale Länge der Nutzlast einer Nachricht

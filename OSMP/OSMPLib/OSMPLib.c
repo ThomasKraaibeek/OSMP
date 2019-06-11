@@ -231,3 +231,109 @@ int OSMP_Finalize(void){
     }
     return OSMP_SUCCESS;
 }
+
+void t_send(IRequest *req){
+
+    OSMP_Send(req->buffer,req->count,req->type,req->dest);
+
+}
+
+
+int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSMP_Request request){
+
+    if(buf==NULL){
+        error("[OSMPLib.c] buf null");
+    }
+    if(request==NULL){
+        error("[OSMPLib.c] request null");
+    }
+
+    int rv = 0;
+
+    rv = OSMP_CreateRequest(request);
+
+    IRequest *req = (IRequest*) request;
+
+    req->type = datatype;
+    req->count = count;
+    req->dest = dest;
+
+    memcpy(req->buffer,buf,count);
+
+    pthread_t pthread;
+
+    pthread_create(&pthread,NULL,(*t_send),req);
+    pthread_detach(pthread);
+
+    return OSMP_SUCCESS;
+
+}
+
+int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len, OSMP_Request request){
+
+
+
+}
+
+int OSMP_Test(OSMP_Request request, int *flag){
+
+
+
+}
+
+int OSMP_Wait (OSMP_Request request){
+
+    if(request==NULL){
+        error("[OSMPLib.c] OSMP_Request null");
+    }
+
+    IRequest *req = (IRequest*) request;
+    if(sem_wait(&req->mutex)){
+        error("[OSMPLib.c] sem_wait");
+    }
+    if(sem_post(&req->mutex)){
+        error("[OSMPLib.c] sem_post");
+    }
+
+    return OSMP_SUCCESS;
+
+
+}
+
+int OSMP_CreateRequest(OSMP_Request *request){
+    if(request==NULL){
+        error("[OSMPLib.c] OSMP_Request null");
+    }
+
+    request = calloc(1,sizeof(IRequest));
+    if(request==NULL){
+        error("[OSMPLib.c] OSMP_Request null");
+    }
+
+    IRequest *req = (IRequest*) *request;
+    if(sem_init(&req->mutex,0,0)){
+        error("[OSMPLib.c] OSMP_Request sem_init");
+    }
+    req->buffer = NULL;
+    req->length = NULL;
+    req->source = NULL;
+    req->dest = 0;
+    req->count = 0;
+    req->type = NULL;
+
+    *request = req;
+
+    return OSMP_SUCCESS;
+}
+
+int OSMP_RemoveRequest(OSMP_Request *request){
+    if(request==NULL){
+        error("[OSMPLib.c] OSMP_Request null");
+    }
+    IRequest *req = (IRequest *) request;
+    if(sem_destroy(&req->mutex)){
+        error("[OSMPLib.c] OSMP_Request sem_destroy");
+    }
+    free(request); //@TODO *request?
+    return OSMP_SUCCESS;
+}
