@@ -139,7 +139,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
     shm_start->msg[first].src = rank;
     shm_start->msg[first].nextmsg = -1;
 
-    memcpy(shm_start->msg[first].data,buf, (size_t) count);
+    memcpy(shm_start->msg[first].data, buf, (size_t) count);
     //printf("sendbuf: %s\n", shm_start->msg[first].data);
 
     if(sem_wait(&shm_start->p[rank].mutex)==-1)
@@ -338,6 +338,9 @@ int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *l
 
 int OSMP_Test(OSMP_Request request, int *flag){
 
+    IRequest *req = (IRequest*) request;
+    if(sem_getvalue(&req->mutex, flag))
+        error("[OSMPLib.c] request running in sem_getvalue");
     return OSMP_SUCCESS;
 
 }
@@ -367,7 +370,7 @@ int OSMP_CreateRequest(OSMP_Request *request){
         error("[OSMPLib.c] OSMP_Request null");
     }
 
-    *request = calloc(1,sizeof(IRequest));
+    *request = calloc(1, sizeof(IRequest));
     if(request==NULL){
         error("[OSMPLib.c] OSMP_Request null");
     }
@@ -393,10 +396,10 @@ int OSMP_RemoveRequest(OSMP_Request *request){
     if(request==NULL){
         error("[OSMPLib.c] OSMP_Request null");
     }
-    IRequest *req = (IRequest *) request;
+    IRequest *req = (IRequest *) *request;
     if(sem_destroy(&req->mutex)){
         error("[OSMPLib.c] OSMP_Request sem_destroy");
     }
-    free(request); //@TODO *request?
+    free(*request); //@TODO *request?
     return OSMP_SUCCESS;
 }

@@ -20,21 +20,21 @@ int main(int argc, char** argv){
     rv = OSMP_Rank(&rank);
 
     OSMP_Request request;//= calloc(1, sizeof(IRequest));
-    rv = OSMP_CreateRequest(&request);
+    //rv = OSMP_CreateRequest(&request);
 
-    //rv = OSMP_Isend(bufin, 4, OSMP_INT, rank, request);
+    //rv = OSMP_Isend(bufin, 12, OSMP_INT, rank, request);
     rv = OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH, OSMP_INT, rank);
 
     //rv = OSMP_Wait(request);
-    rv = OSMP_RemoveRequest(request);
+    //rv = OSMP_RemoveRequest(request);
 
 
 
-    rv = OSMP_CreateRequest(&request);
+    //rv = OSMP_CreateRequest(&request);
     bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH);
     //rv = OSMP_Irecv(bufout, OSMP_MAX_PAYLOAD_LENGTH, OSMP_INT, &source, &len, request);
     rv = OSMP_Recv(bufout, OSMP_MAX_PAYLOAD_LENGTH, OSMP_INT, &source, &len);
-    rv = OSMP_RemoveRequest(request);
+    //rv = OSMP_RemoveRequest(request);
 
     printf("Recieved from %d : %s\n",source,bufout);
 
