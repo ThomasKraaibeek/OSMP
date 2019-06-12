@@ -5,16 +5,34 @@
 #include "OSMPLib.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include <time.h>
 
 //SHM Struct
 shm* shm_start;
 sem_t mutex;
 sem_t emptyslots;
 
+clock_t start;
+
 int processes = 0, rank = 0;
 
+void debug(char* message, ...) {
+#ifdef DEBUG
+    clock_t stamp = clock();
+	double runtime = ((double) (stamp - start)) / CLOCKS_PER_SEC;
+
+	va_list args;
+	va_start(args, message);
+	printf("[PROC-%03d][%09.5f] ", rank, runtime);
+	vprintf(message, args);
+	printf("\n");
+	fflush(stdout);
+	va_end(args);
+#endif
+}
+
 void error(char* msg, ...){
-    printf("%s | %s\n", msg, strerror(errno));
+    debug("%s | %s\n", msg, strerror(errno));
     exit(0);
 }
 
@@ -24,6 +42,8 @@ void error(char* msg, ...){
  * @return 1=success, 0=fail
  */
 int OSMP_Init(int *argc, char ***argv){
+
+    start = clock();
 
     int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
 
@@ -100,6 +120,8 @@ int OSMP_Rank(int *rank){
  */
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
 
+    debug("OSMPLib.c: OSMP_Send. Start");
+
     if(sem_wait(&shm_start->p[rank].freeslots)==-1)
         error("[OSMPLib.c] sem_wait Error");
     if(sem_wait(&shm_start->emptymsg.freeslots)==-1)
@@ -152,6 +174,9 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
  */
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *len){
 
+    debug("OSMPLib.c: OSMP_Recv. Start");
+
+
     if(sem_wait(&shm_start->p[rank].fullslots)==-1)
         error("[OSMPLib.c] sem_wait Error");
 
@@ -164,6 +189,7 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
     if(sem_post(&shm_start->p[rank].mutex)==-1)
         error("[OSMPLib.c] sem_post Error");
 
+    *source = shm_start->msg[first].src;
     memcpy(buf,shm_start->msg[first].data,shm_start->msg[first].len);
 
     if(sem_wait(&shm_start->emptymsg.mutex)==-1)

@@ -25,6 +25,7 @@
 #define OSMP_SUCCESS 0
 #define OSMP_ERROR -1
 
+#define DEBUG
 
 typedef void* OSMP_Datatype;
 
