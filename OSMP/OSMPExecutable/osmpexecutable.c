@@ -7,7 +7,8 @@
 int main(int argc, char** argv){
 
     int rv = 0, size = 0, rank = 0, source, len;
-    //int bufin[2], bufout[2];
+    char* bufin="Test Message";
+    char* bufout;
     int out;
     int in = 5;
     //*in = 5;
@@ -21,15 +22,21 @@ int main(int argc, char** argv){
     OSMP_Request request;//= calloc(1, sizeof(IRequest));
     rv = OSMP_CreateRequest(&request);
 
-    rv = OSMP_Isend(&in, 4, OSMP_INT, rank, request);
-    //rv = OSMP_Send(&in, 4, OSMP_INT, rank);
+    //rv = OSMP_Isend(bufin, 4, OSMP_INT, rank, request);
+    rv = OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH, OSMP_INT, rank);
+
+    //rv = OSMP_Wait(request);
+    rv = OSMP_RemoveRequest(request);
 
 
-    //rv = OSMP_Irecv(&out, 4, OSMP_INT, &source, &len, request);
-    rv = OSMP_Recv(&out, 4, OSMP_INT, &source, &len);
-    rv = OSMP_Wait(request);
 
-    printf("Recieved from %d : %d\n",source,out);
+    rv = OSMP_CreateRequest(&request);
+    bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH);
+    //rv = OSMP_Irecv(bufout, OSMP_MAX_PAYLOAD_LENGTH, OSMP_INT, &source, &len, request);
+    rv = OSMP_Recv(bufout, OSMP_MAX_PAYLOAD_LENGTH, OSMP_INT, &source, &len);
+    rv = OSMP_RemoveRequest(request);
+
+    printf("Recieved from %d : %s\n",source,bufout);
 
     //OSMP_INT a = 5;
     //OSMP_Test(a);

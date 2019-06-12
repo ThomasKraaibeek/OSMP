@@ -140,7 +140,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
     shm_start->msg[first].nextmsg = -1;
 
     memcpy(shm_start->msg[first].data,buf, (size_t) count);
-    printf("sendbuf: %s\n", shm_start->msg[first].data);
+    //printf("sendbuf: %s\n", shm_start->msg[first].data);
 
     if(sem_wait(&shm_start->p[rank].mutex)==-1)
         error("[OSMPLib.c] sem_wait Error");
@@ -271,7 +271,7 @@ void* t_recv(void *request){
 
 int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSMP_Request request){
 
-    printf("buf: %s\n", (char*)buf);
+    //printf("buf: %s\n", (char*)buf);
 
     debug("OSMPLib.c: OSMP_iSend. Start");
 
