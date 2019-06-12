@@ -73,6 +73,7 @@ int main(int argc, char **argv) {
     int inputprocessAmount = atoi(argv[1]);
     if (inputprocessAmount >=  10000 || inputprocessAmount < 0) {
         error("[OSMPStarter.c] Anzahl der Prozesse muss zwischen 1 und %ld liegen\n", sizeof(int)/2);
+        return OSMP_ERROR;
     }
 
     //Sonst warnung wegen Vorzeichen
@@ -91,6 +92,7 @@ int main(int argc, char **argv) {
     int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
     if(fd==-1){
         error("[OSMPStarter.c] Fehler bei shm_open");
+        return OSMP_ERROR;
     }
 
     //@TODO unsigned int richtig?
@@ -99,6 +101,7 @@ int main(int argc, char **argv) {
     //Fehlerbehandlung, falls ftruncate nicht funktioniert hat
     if (ftrunc == -1) {
         error("[OSMPStarter.c] Fehler bei ftruncate");
+        return OSMP_ERROR;
     }
 
 
@@ -109,6 +112,7 @@ int main(int argc, char **argv) {
     //Fehlerbehandlung für das Mapping
     if (shm_start == MAP_FAILED) {
         error("[OSMPStarter.c] Fehler beim Mapping");
+        return OSMP_ERROR;
     }
 
     slots_init(processAmount);
@@ -120,6 +124,7 @@ int main(int argc, char **argv) {
         //Fehlerbehandlung
         if (pid < 0) {
             error("Fehler bei der Prozessaufteilung");
+            return OSMP_ERROR;
         }
 
         //Child
@@ -133,7 +138,7 @@ int main(int argc, char **argv) {
 
             //Parent braucht durch das Sleep einige Zeit um was in den Speicher zu schreiben. Hier wird direkt ausgelesen. Speicher muss leer sein.
             //strncmp(map, "", strlen(map)) == 0 ? printf("p(%d): Speicher leer!\n", i) : printf("p(%d): %s\n", i, (char *) map);
-            return 1;
+            return OSMP_ERROR;
         }
 
         //Parent
@@ -143,7 +148,7 @@ int main(int argc, char **argv) {
                 continue;
             }
 
-            memcpy(shm_start->msg->data, "s", 1);
+            //memcpy(shm_start->msg->data, "s", 1);
             //sprintf(shm_start, "%s", "Hallo Welt");
         }
 
