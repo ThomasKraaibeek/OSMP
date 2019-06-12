@@ -7,7 +7,7 @@
 int main(int argc, char** argv){
 
     int rv = 0, size = 0, rank = 0, source, len;
-    int bufin[2], bufout[2];
+    //int bufin[2], bufout[2];
     int out;
     int in = 5;
     //*in = 5;
@@ -19,9 +19,15 @@ int main(int argc, char** argv){
     rv = OSMP_Rank(&rank);
 
     rv = OSMP_Send(&in, 4, OSMP_INT, rank);
+    //rv = OSMP_Recv(&out, 4, OSMP_INT, &source, &len);
 
+    OSMP_Request request;//= calloc(1, sizeof(IRequest));
 
-    rv = OSMP_Recv(&out, 4, OSMP_INT, &source, &len);
+    rv = OSMP_CreateRequest(&request);
+    printf("rv: %d",rv);
+    //rv = OSMP_Isend(&in, 1, OSMP_INT, rank, request);
+    rv = OSMP_Irecv(&out, 4, OSMP_INT, &source, &len, request);
+    rv = OSMP_Wait(request);
 
     printf("Recieved from %d : %d\n",source,out);
 

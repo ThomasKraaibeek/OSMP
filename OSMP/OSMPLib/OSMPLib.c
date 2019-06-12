@@ -190,6 +190,7 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
         error("[OSMPLib.c] sem_post Error");
 
     *source = shm_start->msg[first].src;
+    *len = shm_start->msg[first].len;
     memcpy(buf,shm_start->msg[first].data,shm_start->msg[first].len);
 
     if(sem_wait(&shm_start->emptymsg.mutex)==-1)
@@ -206,6 +207,7 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
 
     if(sem_post(&shm_start->p[rank].freeslots)==-1)
         error("[OSMPLib.c] sem_post Error");
+
 
     return OSMP_SUCCESS;
 
@@ -248,19 +250,24 @@ int OSMP_Finalize(void){
 
 void* t_send(void *request){
     IRequest *req = (IRequest *) request;
-
     OSMP_Send(req->buffer,req->count,req->type,req->dest);
-
+    if(sem_post(&req->mutex)==-1)
+        error("[OSMPLib.c] sem_post");
 }
 
 void* t_recv(void *request){
     IRequest *req = (IRequest *) request;
     OSMP_Recv(req->buffer,req->count,req->type,req->source,req->length);
+    if(sem_post(&req->mutex)==-1)
+        error("[OSMPLib.c] sem_post");
 
 }
 
 
 int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSMP_Request request){
+
+    debug("OSMPLib.c: OSMP_iSend. Start");
+
 
     if(buf==NULL){
         error("[OSMPLib.c] buf null");
@@ -275,11 +282,12 @@ int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSM
 
     IRequest *req = (IRequest*) request;
 
+    req->buffer = (char *) buf;
     req->type = datatype;
     req->count = count;
     req->dest = dest;
 
-    memcpy(req->buffer,buf,count);
+//    memcpy(req->buffer,buf,count);
 
     pthread_t pthread;
 
@@ -294,6 +302,9 @@ int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSM
 
 int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len, OSMP_Request request){
 
+    debug("OSMPLib.c: OSMP_iRecv. Start");
+
+
     if(buf==NULL){
         error("[OSMPLib.c] buf null");
     }
@@ -303,17 +314,19 @@ int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *l
 
     IRequest *req = (IRequest *) request;
 
+    req->buffer = buf;
     req->count = count;
     req->type = datatype;
     req->length = len;
     req->source = source;
 
-    memcpy(req->buffer,buf,(size_t) req->length);
+    //memcpy(req->buffer,buf,(size_t) req->length);
 
     pthread_t pthread;
 
     pthread_create(&pthread,NULL,(*t_recv),request);
     pthread_detach(pthread);
+    //debug("Length: %d",len);
 
     return OSMP_SUCCESS;
 
@@ -328,6 +341,7 @@ int OSMP_Test(OSMP_Request request, int *flag){
 }
 
 int OSMP_Wait (OSMP_Request request){
+    debug("OSMPLib.c: Wait. Start");
 
     if(request==NULL){
         error("[OSMPLib.c] OSMP_Request null");
@@ -347,19 +361,23 @@ int OSMP_Wait (OSMP_Request request){
 }
 
 int OSMP_CreateRequest(OSMP_Request *request){
+    debug("OSMPLib.c: OSMP_CreateRequest");
+
     if(request==NULL){
         error("[OSMPLib.c] OSMP_Request null");
     }
 
-    request = calloc(1,sizeof(IRequest));
+    *request = calloc(1,sizeof(IRequest));
     if(request==NULL){
         error("[OSMPLib.c] OSMP_Request null");
     }
 
     IRequest *req = (IRequest*) *request;
-    if(sem_init(&req->mutex,0,0)){
+    if(sem_init(&req->mutex, 0, 0)){
         error("[OSMPLib.c] OSMP_Request sem_init");
     }
+    debug("OSMPLib.c: OSMP_CreateRequest2");
+
     req->buffer = NULL;
     req->length = NULL;
     req->source = NULL;
