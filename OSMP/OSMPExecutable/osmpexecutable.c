@@ -24,7 +24,7 @@ int main(int argc, char** argv){
     OSMP_Request request;//= calloc(1, sizeof(IRequest));
 
     rv = OSMP_CreateRequest(&request);
-    printf("rv: %d",rv);
+
     //rv = OSMP_Isend(&in, 1, OSMP_INT, rank, request);
     rv = OSMP_Irecv(&out, 4, OSMP_INT, &source, &len, request);
     rv = OSMP_Wait(request);

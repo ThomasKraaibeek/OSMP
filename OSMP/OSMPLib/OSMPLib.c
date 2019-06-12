@@ -36,6 +36,7 @@ void error(char* msg, ...){
     exit(0);
 }
 
+
 /**
  * Erzeugen des Shared Memory, zuschneiden und mappen.
  * @param 
@@ -61,13 +62,14 @@ int OSMP_Init(int *argc, char ***argv){
         error("[OSMPLib.c] fstat fail");
     }
 
-
-    size_t shm_size = shm_stat->st_size;
-
+    size_t shm_size = (size_t) shm_stat->st_size;
     free(shm_stat);
 
-    processes = shm_size - (OSMP_MAX_SLOTS * sizeof(message))- (sizeof(process)) ; //sizeof(process) = emptyslot
-    processes /= sizeof(process);
+    printf("shmsize: %ld\n", shm_size);
+
+
+    processes = (int) (shm_size - (OSMP_MAX_SLOTS * sizeof(message))- (sizeof(process))) ; //sizeof(process) = emptyslot
+    processes /= (int) sizeof(process);
 
     //Mappe den erzeugten shared memory in den Prozessspeicher
     shm_start = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
@@ -135,12 +137,12 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
     if(sem_post(&shm_start->emptymsg.mutex)==-1)
         error("[OSMPLib.c] sem_post Error");
 
-    shm_start->msg[first].len = count;
+    shm_start->msg[first].len = (size_t) count;
     shm_start->msg[first].type = datatype;
     shm_start->msg[first].src = rank;
     shm_start->msg[first].nextmsg = -1;
 
-    memcpy(shm_start->msg[first].data,buf,count);
+    memcpy(shm_start->msg[first].data,buf, (size_t) count);
 
     if(sem_wait(&shm_start->p[rank].mutex)==-1)
         error("[OSMPLib.c] sem_wait Error");
@@ -190,7 +192,7 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
         error("[OSMPLib.c] sem_post Error");
 
     *source = shm_start->msg[first].src;
-    *len = shm_start->msg[first].len;
+    *len = (int) shm_start->msg[first].len;
     memcpy(buf,shm_start->msg[first].data,shm_start->msg[first].len);
 
     if(sem_wait(&shm_start->emptymsg.mutex)==-1)
@@ -239,7 +241,9 @@ int OSMP_Finalize(void){
         shm_start->emptymsg.lastmsg = -1;
     }
 
-    rv = munmap(shm_start, sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processes * sizeof(process));
+    rv = munmap(shm_start, (sizeof(process) + OSMP_MAX_SLOTS * sizeof(message) + (unsigned int) processes * sizeof(process)));
+
+    //printf("rechnung: %d", sizeof(process) + OSMP_MAX_SLOTS * sizeof(message) + processes * sizeof(process));
 
     if(i==processes){
         printf("Unlinking SHM of Rank: %d\n",rank);
@@ -253,6 +257,8 @@ void* t_send(void *request){
     OSMP_Send(req->buffer,req->count,req->type,req->dest);
     if(sem_post(&req->mutex)==-1)
         error("[OSMPLib.c] sem_post");
+
+    return 0;
 }
 
 void* t_recv(void *request){
@@ -261,6 +267,7 @@ void* t_recv(void *request){
     if(sem_post(&req->mutex)==-1)
         error("[OSMPLib.c] sem_post");
 
+    return 0;
 }
 
 
@@ -329,14 +336,11 @@ int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *l
     //debug("Length: %d",len);
 
     return OSMP_SUCCESS;
-
-
-
 }
 
 int OSMP_Test(OSMP_Request request, int *flag){
 
-
+    return OSMP_SUCCESS;
 
 }
 
@@ -356,8 +360,6 @@ int OSMP_Wait (OSMP_Request request){
     }
 
     return OSMP_SUCCESS;
-
-
 }
 
 int OSMP_CreateRequest(OSMP_Request *request){
@@ -376,7 +378,6 @@ int OSMP_CreateRequest(OSMP_Request *request){
     if(sem_init(&req->mutex, 0, 0)){
         error("[OSMPLib.c] OSMP_Request sem_init");
     }
-    debug("OSMPLib.c: OSMP_CreateRequest2");
 
     req->buffer = NULL;
     req->length = NULL;

@@ -1,4 +1,4 @@
-CC=gcc -g -std=c99 -D_XOPEN_SOURCE=500
+CC=gcc -g -Wall -Wconversion -std=c99 -D_XOPEN_SOURCE=500
 NAME=OSMPLib
 #-Wall -Wconversion
 osmplib:	$(NAME).c
