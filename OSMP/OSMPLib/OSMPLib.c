@@ -1,5 +1,5 @@
 //
-// Created by gurur on 24.04.19.
+// Created by Gurur Öndarö and Thomas Kraaibeek on 24.04.19.
 //
 
 #include "OSMPLib.h"
@@ -18,12 +18,9 @@ int processes = 0, rank = 0;
 
 void debug(char* message, ...) {
 #ifdef DEBUG
-    clock_t stamp = clock();
-	double runtime = ((double) (stamp - start)) / CLOCKS_PER_SEC;
 
 	va_list args;
 	va_start(args, message);
-	//printf("[PROC-%03d][%09.5f] ", rank, runtime);
     printf("[PROC-%03d] ", rank);
 	vprintf(message, args);
 	printf("\n");
@@ -37,12 +34,6 @@ int error(char* msg, ...){
     return OSMP_ERROR;
 }
 
-
-/**
- * Erzeugen des Shared Memory, zuschneiden und mappen.
- * @param 
- * @return 1=success, 0=fail
- */
 int OSMP_Init(int *argc, char ***argv){
 
     start = clock();

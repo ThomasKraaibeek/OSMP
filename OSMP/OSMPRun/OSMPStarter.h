@@ -1,5 +1,5 @@
 //
-// Created by gurur on 24.04.19.
+// Created by Gurur Öndarö and Thomas Kraaibeek on 24.04.19.
 //
 
 #include <stdio.h>
@@ -34,6 +34,19 @@
 #define OSMP_MAX_PAYLOAD_LENGTH  1024 // maximale Länge der Nutzlast einer Nachricht
 
 
+/**
+ * Startpunkt des OSMPStarters. Richtet den von allen Prozessen genutzten Shared-Memory ein und startet Prozesse.
+ * @param argc Anzahl der übergebenen Parameter
+ * @param argv Erster Parameter: Anzahl der zu erzeugenden Prozesse. Zweiter Paramter: Auszuführende Datei.
+ * @return int Success oder Error
+ */
+int main(int argc, char **argv);
+
+/**
+ * Konvertiert Integer zu String
+ * @param value zu konvertierende Zahl
+ * @return konvertierte Zahl
+ */
 char* itos(int value);
 
 #endif //OSMP_OSMPSTARTER_H

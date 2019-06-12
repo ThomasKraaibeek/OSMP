@@ -1,9 +1,19 @@
+//
+// Created by Gurur Öndarö and Thomas Kraaibeek on 24.04.19.
+//
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "../OSMPLib/OSMPLib.h"
 
+/**
+ * Ausführbare Datei, die von allen Prozessen geladen wird. Die Prozesse nutzen OSMPLib-Routinen um miteinander zu kommunizieren
+ * @param argc Name dieser Datei
+ * @param argv Alle Argumente, die auch dem OSMPStarter übergeben wurden
+ * @return Success oder Error
+ */
 int main(int argc, char** argv){
 
     int rv = 0, size = 0, rank = 0, source, len;
@@ -12,8 +22,6 @@ int main(int argc, char** argv){
     int out;
     int in = 5;
     //*in = 5;
-    //printf("im exec: %d\n", atoi(argv[2]));
-    fflush(stdout);
 
     rv = OSMP_Init(&argc,&argv);
     rv = OSMP_Size(&size);
@@ -27,7 +35,6 @@ int main(int argc, char** argv){
 
     //rv = OSMP_Wait(request);
     //rv = OSMP_RemoveRequest(request);
-
 
 
     rv = OSMP_CreateRequest(&request);

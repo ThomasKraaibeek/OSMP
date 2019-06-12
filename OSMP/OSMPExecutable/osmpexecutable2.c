@@ -1,5 +1,5 @@
 //
-// Created by thomas on 12.06.19.
+// Created by Gurur Öndarö and Thomas Kraaibeek on 12.06.19.
 //
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,14 +7,24 @@
 
 #include "../OSMPLib/OSMPLib.h"
 
-void test01();
+/**
+ * Test 01: Keine der OSM OSMP-Funktionen sollte ohne OSMP_Init aufzurufen, oder nach OSMP_Finalize verwendbar sein.
+ * @param argc Name dieser Datei
+ * @param argv Alle Argumente, die auch dem OSMPStarter übergeben wurden
+ */
+void test01(int argc, char** argv);
 
 
-
+/**
+ * Ausführbare Datei, die von allen Prozessen geladen wird. Die Prozesse nutzen OSMPLib-Routinen um miteinander zu kommunizieren
+ * @param argc Name dieser Datei
+ * @param argv Alle Argumente, die auch dem OSMPStarter übergeben wurden
+ * @return Success oder Error
+ */
 int main(int argc, char** argv) {
 
     printf("Test1..\n");
-    test01();
+    test01(argc, argv);
 
     return 1;
 }
