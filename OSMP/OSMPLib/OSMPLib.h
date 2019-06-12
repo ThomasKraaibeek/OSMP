@@ -14,6 +14,7 @@
 #include <fcntl.h>           /* for O_* constans*/
 #include <sys/types.h>
 #include <semaphore.h>
+#include <pthread.h>
 
 #ifndef OSMP_OSMPLIB_H
 #define OSMP_OSMPLIB_H
@@ -43,16 +44,15 @@ typedef struct {
 #define OSMP_MAX_SLOTS           256  // maximale Anzahl der Nachrichten, die insgesamt vorhanden sein dürfen
 #define OSMP_MAX_PAYLOAD_LENGTH  1024 // maximale Länge der Nutzlast einer Nachricht
 
-typedef short int OSMP_SHORT;
-typedef int OSMP_INT;
-typedef long int OSMP_LONG;
-typedef unsigned char OSMP_UNSIGNED_CHAR;
-typedef unsigned short int OSMP_UNSIGNED_SHORT;
-typedef unsigned int OSMP_UNSIGNED;
-typedef unsigned long int OSMP_UNSIGNED_LONG;
-typedef float OSMP_FLOAT;
-typedef double OSMP_DOUBLE;
-typedef char OSMP_BYTE;
+#define OSMP_INT 0
+#define OSMP_SHORT 1
+#define OSMP_LONG 2
+#define OSMP_UNSIGNED_CHAR 3
+#define OSMP_UNSIGNED_SHORT 4
+#define OSMP_UNSIGNED 5
+#define OSMP_FLOAT 6
+#define OSMP_DOUBLE 7
+#define OSMP_BYTE 8
 
 typedef struct{
     int src;

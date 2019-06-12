@@ -4,6 +4,7 @@
 
 #include "OSMPLib.h"
 #include <stdio.h>
+#include <stdarg.h>
 
 //SHM Struct
 shm* shm_start;
@@ -24,11 +25,8 @@ void error(char* msg, ...){
  */
 int OSMP_Init(int *argc, char ***argv){
 
-    //printf("anfang init. pamount: %d\n", argv[2]);
-
     int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
 
-    //printf("fd: %d\n", fd);
 
     if(fd==-1){
         error("[OSMPLib.c] Fehler bei shm_open");
@@ -46,27 +44,19 @@ int OSMP_Init(int *argc, char ***argv){
 
     size_t shm_size = shm_stat->st_size;
 
-    //printf("shm_size: %ld\n", shm_size);
     free(shm_stat);
 
     processes = shm_size - (OSMP_MAX_SLOTS * sizeof(message))- (sizeof(process)) ; //sizeof(process) = emptyslot
     processes /= sizeof(process);
 
-
-    //printf("shmzise: %d, MaxSlots: %d, sizeof(message): %d, sizeof(process): %d, sizeof(emptyslot): %d, processes: %d ",shm_size, OSMP_MAX_SLOTS, sizeof(message),
-    //       sizeof(process), sizeof(emptyslot), processes);
-    printf("Processes: %d", processes);
-
     //Mappe den erzeugten shared memory in den Prozessspeicher
-    shm_start = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
+    shm_start = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     //Fehlerbehandlung für das Mapping
     if (shm_start == MAP_FAILED) {
         printf("line: %d ", __LINE__ -3);
         error("[OSMPLib.c] Fehler beim Mapping");
     }
     OSMP_Rank(&rank);
-
-    //printf("Printing len: %ld",shm_start->msg->len);
 
     return OSMP_SUCCESS;
 }
@@ -144,9 +134,11 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest){
     if(sem_post(&shm_start->p[rank].mutex))
         error("[OSMPLib.c] sem_post Error");
 
+    if(sem_post(&shm_start->p[dest].fullslots))
+        error("[OSMPLib.c] sem_post Error");
+
 
     return OSMP_SUCCESS;
-
 }
 
 /**
@@ -189,7 +181,6 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
     if(sem_post(&shm_start->p[rank].freeslots)==-1)
         error("[OSMPLib.c] sem_post Error");
 
-
     return OSMP_SUCCESS;
 
 }
@@ -201,13 +192,12 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
 int OSMP_Finalize(void){
 
     if(shm_start->p[rank].pid==getpid()){
-        //@TODO Semaphoren setzen
         shm_start->p[rank].pid = -1;
         shm_start->p[rank].firstmsg = -1;
         shm_start->p[rank].lastmsg = -1;
     }
 
-    int i = 0;
+    int i = 0,rv=0;
 
     //Prüft, ob in der Menge der Prozesse noch welche vorhanden sind, welche nicht bereits auf -1 gesetzt wurden. Falls ja, break => i!= processes => Kein shm_unlink & Kein emptymsg auf -1
     while(i<processes){
@@ -215,26 +205,31 @@ int OSMP_Finalize(void){
             break;
         i++;
     }
-    printf("\ti: %d\t rank: %d\n",i,rank);
 
     if(i==processes){
-        //@TODO Semaphoren setzen
         shm_start->emptymsg.firstmsg = -1;
         shm_start->emptymsg.lastmsg = -1;
     }
 
-    int result = munmap(shm_start, sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processes * sizeof(process));
+    rv = munmap(shm_start, sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processes * sizeof(process));
 
     if(i==processes){
         printf("Unlinking SHM of Rank: %d\n",rank);
-        shm_start = shm_unlink(SHMNAME);
+        rv=shm_unlink(SHMNAME);
     }
-    return OSMP_SUCCESS;
+    return rv;
 }
 
-void t_send(IRequest *req){
+void* t_send(void *request){
+    IRequest *req = (IRequest *) request;
 
     OSMP_Send(req->buffer,req->count,req->type,req->dest);
+
+}
+
+void* t_recv(void *request){
+    IRequest *req = (IRequest *) request;
+    OSMP_Recv(req->buffer,req->count,req->type,req->source,req->length);
 
 }
 
@@ -262,14 +257,39 @@ int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSM
 
     pthread_t pthread;
 
-    pthread_create(&pthread,NULL,(*t_send),req);
+    pthread_create(&pthread,NULL,(*t_send),request);
     pthread_detach(pthread);
 
-    return OSMP_SUCCESS;
+    rv = OSMP_SUCCESS;
+
+    return rv;
 
 }
 
 int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len, OSMP_Request request){
+
+    if(buf==NULL){
+        error("[OSMPLib.c] buf null");
+    }
+    if(request==NULL){
+        error("[OSMPLib.c] request null");
+    }
+
+    IRequest *req = (IRequest *) request;
+
+    req->count = count;
+    req->type = datatype;
+    req->length = len;
+    req->source = source;
+
+    memcpy(req->buffer,buf,(size_t) req->length);
+
+    pthread_t pthread;
+
+    pthread_create(&pthread,NULL,(*t_recv),request);
+    pthread_detach(pthread);
+
+    return OSMP_SUCCESS;
 
 
 
