@@ -67,7 +67,7 @@ int OSMP_Init(int *argc, char ***argv){
     shm_start = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     //Fehlerbehandlung für das Mapping
     if (shm_start == MAP_FAILED) {
-        printf("line: %d ", __LINE__ -3);
+        printf("line: %d \n", __LINE__ -3);
         error("[OSMPLib.c] Fehler beim Mapping");
         return OSMP_ERROR;
     }

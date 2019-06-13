@@ -27,6 +27,13 @@ void test00(int argc, char *argv[]);
  */
 void test01(int argc, char** argv);
 
+/**
+ *
+ * @param argc
+ * @param argv
+ */
+void test02(int argc, char** argv);
+
 
 /**
  * Ausführbare Datei, die von allen Prozessen geladen wird. Die Prozesse nutzen OSMPLib-Routinen um miteinander zu kommunizieren
@@ -36,8 +43,16 @@ void test01(int argc, char** argv);
  */
 int main(int argc, char** argv) {
 
-    printf("Test1..\n");
-    test01(argc, argv);
+    printf("Test000..\n");
+    //test000(argc,argv);
+    printf("Test00..\n");
+    //test00(argc,argv);
+    printf("Test01..\n");
+    //test01(argc, argv);
+    printf("Test02\n");
+    test02(argc,argv);
+    printf("Test03\n");
+
 
     return 1;
 }
@@ -62,7 +77,6 @@ void test000(int argc, char *argv[])
         printf("OSMP process %d received %d byte from %d [%d:%d] \n",rank, len, source, bufout[0], bufout[1]);
     }
     rv = OSMP_Finalize();
-    return 0;
 }
 
 
@@ -145,9 +159,45 @@ void test01(int argc, char** argv){
     if(bufout==NULL) error("[osmpexecutable2.c] Calloc fail");
 
     if(OSMP_Recv(bufout, OSMP_MAX_PAYLOAD_LENGTH, OSMP_INT, &source, &len)==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Recv");
-
     //printf("Recieved from %d : %s\n",source,bufout);
-
-
     fflush(stdout);
+}
+
+void test02(int argc,char** argv){
+
+    int rv, size, rank, source, len;
+    char *bufin, *bufout;
+    OSMP_Request myrequest;
+    rv = OSMP_Init(&argc, &argv);
+    if(rv==OSMP_ERROR){
+        debug("ERROR OSMP_INIT");
+    }
+    rv = OSMP_Size( &size );
+    rv = OSMP_Rank( &rank );
+    if( size != 2 ) { /* Fehlerbehandlung */ }
+    if( rank == 0 )
+    { // OSMP process 0
+
+    }
+    else
+    { // OSMP process 1
+        bufout = malloc(OSMP_MAX_PAYLOAD_LENGTH); // check for != NULL
+        if(bufout==NULL){
+            error("bufout null");
+            return;
+        }
+        rv = OSMP_CreateRequest( &myrequest );
+        rv = OSMP_Irecv( bufout, OSMP_MAX_PAYLOAD_LENGTH, OSMP_CHAR, &source, &len, myrequest );
+        if(rv==OSMP_ERROR) debug("[osmpexecutable2.c] OSMP_IRecv error");
+        //
+        // do something important...
+        //
+        //check if operation is completed and wait if not
+        rv = OSMP_Wait( myrequest );
+        //...
+        printf("OSMP process %d received message: %s \n", rank, bufout);
+        rv = OSMP_RemoveRequest( &myrequest );
+    }
+    rv = OSMP_Finalize();
+
 }

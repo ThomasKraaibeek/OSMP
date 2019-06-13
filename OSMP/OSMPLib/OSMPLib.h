@@ -48,7 +48,7 @@ typedef struct {
 #define OSMP_MAX_SLOTS           256  // maximale Anzahl der Nachrichten, die insgesamt vorhanden sein dürfen
 #define OSMP_MAX_PAYLOAD_LENGTH  1024 // maximale Länge der Nutzlast einer Nachricht
 
-//enum  {OSMP_INT, OSMP_SHORT, OSMP_LONG, OSMP_CHAR, OSMP_UNSIGNED_CHAR, OSMP_UNSIGNED_SHORT, OSMP_UNSIGNED, OSMP_FLOAT, OSMP_DOUBLE, OSMP_BYTE };
+enum  e{OSMP_INT, OSMP_SHORT, OSMP_LONG, OSMP_CHAR, OSMP_UNSIGNED_CHAR, OSMP_UNSIGNED_SHORT, OSMP_UNSIGNED, OSMP_FLOAT, OSMP_DOUBLE, OSMP_BYTE };
 
 #define OSMP_INT 0
 #define OSMP_SHORT 1
