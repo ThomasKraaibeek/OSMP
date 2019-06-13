@@ -57,6 +57,7 @@ int slots_init(unsigned int processAmount) {
         } else {
             shm_start->msg[i].nextmsg = i + 1;
         }
+        //printf("shm_start->msg[%d].next: %d\n", i, shm_start->msg[i].nextmsg);
     }
 
     return OSMP_SUCCESS;

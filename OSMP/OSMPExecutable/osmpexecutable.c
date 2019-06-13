@@ -23,24 +23,35 @@ int main(int argc, char** argv){
     int in = 5;
     //*in = 5;
 
+    int osmp_int = OSMP_INT;
+    int osmp_char = OSMP_BYTE;
+    int flag;
+
     rv = OSMP_Init(&argc,&argv);
     rv = OSMP_Size(&size);
     rv = OSMP_Rank(&rank);
 
     OSMP_Request request;//= calloc(1, sizeof(IRequest));
-    //rv = OSMP_CreateRequest(&request);
+    rv = OSMP_CreateRequest(&request);
 
-    //rv = OSMP_Isend(bufin, 12, OSMP_INT, rank, request);
-    rv = OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH, OSMP_INT, rank);
+    //rv = OSMP_Isend(bufin, 12, &osmp_char, rank, request);
+    rv = OSMP_Send(bufin, (int) strlen(bufin), &osmp_char, rank);
+    //rv = OSMP_Send(in, 1, &osmp_int, rank);
 
-    //rv = OSMP_Wait(request);
+
+    OSMP_Test(request, &flag);
+    printf("flag: %d\n", flag);
+    if(flag == 0){
+        //rv = OSMP_Wait(request);
+    }
+
     //rv = OSMP_RemoveRequest(request);
 
 
-    rv = OSMP_CreateRequest(&request);
+    //rv = OSMP_CreateRequest(&request);
     bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH);
-    //rv = OSMP_Irecv(bufout, OSMP_MAX_PAYLOAD_LENGTH, OSMP_INT, &source, &len, request);
-    rv = OSMP_Recv(bufout, OSMP_MAX_PAYLOAD_LENGTH, OSMP_INT, &source, &len);
+    //rv = OSMP_Irecv(bufout, 12, &osmp_char, &source, &len, request);
+    rv = OSMP_Recv(bufout, 12, &osmp_char, &source, &len);
     rv = OSMP_RemoveRequest(request);
 
     printf("Recieved from %d : %s\n",source,bufout);

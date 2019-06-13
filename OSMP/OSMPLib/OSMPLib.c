@@ -76,6 +76,24 @@ int OSMP_Init(int *argc, char ***argv){
     return OSMP_SUCCESS;
 }
 
+
+int OSMP_DataSize(OSMP_Datatype datatype){
+
+    int* type = (int*) datatype;
+    if(*type == 0) return sizeof(int);
+    else if(*type == 1) return sizeof(short);
+    else if(*type == 2) return sizeof(long);
+    else if(*type == 3) return sizeof(char);
+    else if(*type == 4) return sizeof(unsigned char);
+    else if(*type == 5) return sizeof(unsigned short);
+    else if(*type == 6) return sizeof(unsigned);
+    else if(*type == 7) return sizeof(float);
+    else if(*type == 8) return sizeof(double);
+
+    return 0;
+}
+
+
 /**
  * Schreibe Anzahl von aktuell präsenten Prozessen in *size aus dem OSMPExecutable
  * @param size
@@ -121,6 +139,7 @@ int OSMP_Rank(int *rank){
  * @return
  */
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
+
     if (shm_start == NULL) {
         error("[OSMPLib.c] SHM not initialized");
         return OSMP_ERROR;
@@ -140,27 +159,40 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
         return OSMP_ERROR;
     }
     int first = shm_start->emptymsg.firstmsg;
-    shm_start->emptymsg.firstmsg = shm_start->msg[first].nextmsg;
+
+
+    if(shm_start->emptymsg.firstmsg == shm_start->emptymsg.lastmsg){
+        shm_start->emptymsg.firstmsg = -1;
+        shm_start->emptymsg.lastmsg = -1;
+    }
+    else{
+        first = shm_start->emptymsg.firstmsg;
+        shm_start->emptymsg.firstmsg = shm_start->msg[first].nextmsg;
+    }
 
     if(sem_post(&shm_start->emptymsg.mutex)==-1) {
         error("[OSMPLib.c] sem_post Error");
         return OSMP_ERROR;
     }
 
-    shm_start->msg[first].len = (size_t) count;
+    shm_start->msg[first].len = (size_t) ((count) * OSMP_DataSize(datatype));
+    printf("size %ld\n", shm_start->msg[first].len);
+
     shm_start->msg[first].type = datatype;
+
+    //printf("rank: %d\n", rank);
     shm_start->msg[first].src = rank;
+    //printf("shmstartsrc: %d\n", shm_start->msg[first].src);
     shm_start->msg[first].nextmsg = -1;
 
 
-    memcpy(shm_start->msg[first].data, buf, (size_t) count);
+    memcpy(shm_start->msg[first].data, buf, (size_t) (count*OSMP_DataSize(datatype)));
     //printf("sendbuf: %s\n", shm_start->msg[first].data);
 
     if(sem_wait(&shm_start->p[rank].mutex)==-1) {
         error("[OSMPLib.c] sem_wait Error");
         return OSMP_ERROR;
     }
-
     if(shm_start->p[dest].firstmsg == -1){
         shm_start->p[dest].firstmsg = first;
     }else{
@@ -193,6 +225,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
  * @return
  */
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *len){
+
     if(shm_start==NULL){
         error("[OSMPLib.c] SHM not initialized");
         return OSMP_ERROR;
@@ -210,6 +243,7 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
         return OSMP_ERROR;
     }
     int first = shm_start->p[rank].firstmsg;
+
     shm_start->p[rank].firstmsg = shm_start->msg[first].nextmsg;
 
     if(sem_post(&shm_start->p[rank].mutex)==-1) {
@@ -218,6 +252,8 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
     }
     *source = shm_start->msg[first].src;
     *len = (int) shm_start->msg[first].len;
+
+
 
     memcpy(buf,shm_start->msg[first].data,shm_start->msg[first].len);
 
@@ -338,6 +374,13 @@ int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSM
     req->count = count;
     req->dest = dest;
 
+
+    fflush(stdout);
+    if(sem_init(&req->mutex, 0, 0)){
+        error("[OSMPLib.c] OSMP_Request sem_init");
+        return OSMP_ERROR;
+    }
+
 //    memcpy(req->buffer,buf,count);
 
     pthread_t pthread;
@@ -375,6 +418,11 @@ int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *l
     req->type = datatype;
     req->length = len;
     req->source = source;
+
+    if(sem_init(&req->mutex, 0, 0)){
+        error("[OSMPLib.c] OSMP_Request sem_init");
+        return OSMP_ERROR;
+    }
 
     //memcpy(req->buffer,buf,(size_t) req->length);
 
@@ -419,10 +467,10 @@ int OSMP_Wait (OSMP_Request request){
         error("[OSMPLib.c] sem_wait");
         return OSMP_ERROR;
     }
-    if(sem_post(&req->mutex)){
+    /*if(sem_post(&req->mutex)){
         error("[OSMPLib.c] sem_post");
         return OSMP_ERROR;
-    }
+    }*/
 
     return OSMP_SUCCESS;
 }
@@ -447,10 +495,6 @@ int OSMP_CreateRequest(OSMP_Request *request){
     }
 
     IRequest *req = (IRequest*) *request;
-    if(sem_init(&req->mutex, 0, 0)){
-        error("[OSMPLib.c] OSMP_Request sem_init");
-        return OSMP_ERROR;
-    }
 
     req->buffer = NULL;
     req->length = NULL;
@@ -479,6 +523,6 @@ int OSMP_RemoveRequest(OSMP_Request *request){
         error("[OSMPLib.c] OSMP_Request sem_destroy");
         return OSMP_ERROR;
     }
-    free(*request); //@TODO *request?
+    //free(*request); //@TODO *request?
     return OSMP_SUCCESS;
 }
