@@ -8,6 +8,19 @@
 #include "../OSMPLib/OSMPLib.h"
 
 /**
+ *
+ * @param argc
+ * @param argv
+ */
+void test000(int argc, char *argv[]);
+/**
+ *
+ * @param argc
+ * @param argv
+ */
+void test00(int argc, char *argv[]);
+
+/**
  * Test 01: Keine der OSM OSMP-Funktionen sollte ohne OSMP_Init aufzurufen, oder nach OSMP_Finalize verwendbar sein.
  * @param argc Name dieser Datei
  * @param argv Alle Argumente, die auch dem OSMPStarter übergeben wurden
@@ -28,6 +41,67 @@ int main(int argc, char** argv) {
 
     return 1;
 }
+
+void test000(int argc, char *argv[])
+{
+    int rv, size, rank, source;
+    int bufin[2], bufout[2], len;
+    rv = OSMP_Init( &argc, &argv );
+    rv = OSMP_Size( &size );
+    rv = OSMP_Rank( &rank );
+    if( size != 2 ) { /* Fehlerbehandlung */ }
+    if( rank == 0 )
+    { // OSMP process 0
+        bufin[0] = 4711;
+        bufin[1] = 4712;
+        rv = OSMP_Send( bufin, 2, OSMP_INT, 1 );
+    }
+    else
+    { // OSMP process 1
+        rv = OSMP_Recv( bufout, 2, OSMP_INT, &source, &len );
+        printf("OSMP process %d received %d byte from %d [%d:%d] \n",rank, len, source, bufout[0], bufout[1]);
+    }
+    rv = OSMP_Finalize();
+    return 0;
+}
+
+
+void test00(int argc, char *argv[])
+{
+    int rv, size, rank, source, len;
+    char *bufin, *bufout;
+    OSMP_Request myrequest;
+    rv = OSMP_Init( &argc, &argv );
+    rv = OSMP_Size( &size );
+    rv = OSMP_Rank( &rank );
+    if( size != 2 ) { /* Fehlerbehandlung */ }
+    if( rank == 0 )
+    { // OSMP process 0
+        bufin = malloc(OSMP_MAX_PAYLOAD_LENGTH); // check for != NULL
+        if(bufin==NULL) {
+
+        }
+        strncpy(bufin, "hello world",OSMP_MAX_PAYLOAD_LENGTH);
+        rv = OSMP_Send( bufin, strlen(bufin), OSMP_CHAR, 1 );
+    }
+    else
+    { // OSMP process 1
+        bufout = malloc(OSMP_MAX_PAYLOAD_LENGTH); // check for != NULL
+        rv = OSMP_CreateRequest( &myrequest );
+        rv = OSMP_Irecv( bufout, OSMP_MAX_PAYLOAD_LENGTH, OSMP_CHAR, &source, &len, myrequest );
+        //
+        // do something important...
+        //
+        //check if operation is completed and wait if not
+        rv = OSMP_Wait( myrequest );
+        //...
+        printf("OSMP process %d received message: %s \n", rank, bufout);
+        rv = OSMP_RemoveRequest( &myrequest );
+    }
+    rv = OSMP_Finalize();
+
+}
+
 
 void test01(int argc, char** argv){
 
@@ -76,7 +150,4 @@ void test01(int argc, char** argv){
 
 
     fflush(stdout);
-
-
-
 }
