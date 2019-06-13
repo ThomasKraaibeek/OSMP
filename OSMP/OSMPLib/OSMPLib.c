@@ -166,7 +166,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
         shm_start->emptymsg.lastmsg = -1;
     }
     else{
-        first = shm_start->emptymsg.firstmsg;
+        //first = shm_start->emptymsg.firstmsg;
         shm_start->emptymsg.firstmsg = shm_start->msg[first].nextmsg;
     }
 
