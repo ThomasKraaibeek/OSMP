@@ -23,7 +23,9 @@ int main(int argc, char** argv) {
 
     //rv = test01(argc, argv);
 
-    rv = test02(argc,argv);
+    //rv = test02(argc,argv);
+
+    rv = test03(argc,argv);
 
     debug("Tests finished with Code: %d",rv);
 
@@ -339,14 +341,24 @@ int test02(int argc,char** argv){
 int test03(int argc, char** argv) {
 
     int size, rank, source, len;
-    char *bufin, *bufout;
+    char *bufin = "Test Message", *bufout;
     OSMP_Request myrequest;
 
-    if (OSMP_Init(argc, argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test03 OSMP_Init");
+    if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test03 OSMP_Init");
     if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Size");
     if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Rank");
 
-    if (size != 2) error("[osmpexecutable2.c] Tesst03 Size!=2");
+    if (size != 2) error("[osmpexecutable2.c] Test03 Size!=2");
+
+    if(rank==0){
+        for(int i = 0;i<18;i++){
+            if(OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH,OSMP_BYTE,1)==OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Send");
+        }
+    }else{
+        if(bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH)==NULL) error("[osmpexecutable2.c] Calloc Fail");
+        if(OSMP_Recv(bufout,OSMP_MAX_PAYLOAD_LENGTH,OSMP_BYTE,&source,&len)==OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Recv");
+        wait(2);
+    }
 
     return OSMP_SUCCESS;
 }
