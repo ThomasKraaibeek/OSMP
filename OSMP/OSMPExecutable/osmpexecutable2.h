@@ -33,12 +33,19 @@ int Isend_Recv(int argc, char *argv[]);
 int test01(int argc, char** argv);
 
 /**
- *
+ * Test 02: Der Empfänger soll beim Empfangen einer Nachricht blockieren, wenn keine Nachricht vorhanden ist.
  * @param argc
  * @param argv
  */
 int test02(int argc, char** argv);
 
+/**
+ * Test 03: Der Sender sollte blockieren wenn der Empfänger keine Nachrichten empfangen kann.
+ * @param argc
+ * @param argv
+ * @return
+ */
+int test03(int argc, char** argv);
 
 
 

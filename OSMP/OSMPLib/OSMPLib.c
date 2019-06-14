@@ -36,6 +36,9 @@ int error(char* msg, ...){
 
 int OSMP_Init(int *argc, char ***argv){
 
+    debug("OSMPLib.c: OSMP_Init. Start");
+
+
     start = clock();
 
     int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);

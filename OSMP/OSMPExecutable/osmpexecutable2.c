@@ -307,7 +307,7 @@ int test02(int argc,char** argv){
     }
     rv = OSMP_Size( &size );
     rv = OSMP_Rank( &rank );
-    if( size != 2 ) { /* Fehlerbehandlung */ }
+    if( size != 2 ) error("[osmpexecutable2.c] size!=2 ERROR");
     if( rank == 0 )
     { // OSMP process 0
 
@@ -334,4 +334,19 @@ int test02(int argc,char** argv){
     rv = OSMP_Finalize();
 
     return rv;
+}
+
+int test03(int argc, char** argv) {
+
+    int size, rank, source, len;
+    char *bufin, *bufout;
+    OSMP_Request myrequest;
+
+    if (OSMP_Init(argc, argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test03 OSMP_Init");
+    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Size");
+    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Rank");
+
+    if (size != 2) error("[osmpexecutable2.c] Tesst03 Size!=2");
+
+    return OSMP_SUCCESS;
 }
