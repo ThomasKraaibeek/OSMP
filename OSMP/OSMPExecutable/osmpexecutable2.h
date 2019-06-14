@@ -13,31 +13,31 @@ int osmp_char = OSMP_BYTE;
  * @param argc
  * @param argv
  */
-void Send_Recv(int argc, char *argv[]);
+int Send_Recv(int argc, char *argv[]);
 /**
  *
  * @param argc
  * @param argv
  */
-void Send_Irecv(int argc, char **argv);
+int Send_Irecv(int argc, char **argv);
 
-void Isend_Irecv(int argc, char *argv[]);
+int Isend_Irecv(int argc, char *argv[]);
 
-void Isend_Recv(int argc, char *argv[]);
+int Isend_Recv(int argc, char *argv[]);
 
 /**
  * Test 01: Keine der OSM OSMP-Funktionen sollte ohne OSMP_Init aufzurufen, oder nach OSMP_Finalize verwendbar sein.
  * @param argc Name dieser Datei
  * @param argv Alle Argumente, die auch dem OSMPStarter übergeben wurden
  */
-void test01(int argc, char** argv);
+int test01(int argc, char** argv);
 
 /**
  *
  * @param argc
  * @param argv
  */
-void test02(int argc, char** argv);
+int test02(int argc, char** argv);
 
 
 
