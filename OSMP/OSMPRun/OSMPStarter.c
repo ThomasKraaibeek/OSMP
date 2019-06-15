@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
             //printf("ss%s\n",*argv[1]);
             fflush(stdout);
             //Name der auszuführenden Datei und alle Argumente
-            execlp(argv[2], *argv, NULL);
+            execlp(argv[2], argv[2], argv[3], NULL);
             error("Fehler bei execlp %s", argv[2]);
 
             //Parent braucht durch das Sleep einige Zeit um was in den Speicher zu schreiben. Hier wird direkt ausgelesen. Speicher muss leer sein.

@@ -177,9 +177,15 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
         error("[OSMPLib.c] sem_post Error");
         return OSMP_ERROR;
     }
+    size_t actualLen = (size_t) (count*OSMP_DataSize(datatype));
+    //Länge größer als maximal erlaubte Länge? Info an den Nutzer, dass Nachricht abgeschnitten wird.
+    if((count*OSMP_DataSize(datatype))>OSMP_MAX_PAYLOAD_LENGTH){
+        debug("[osmplib.c] OSMP_Send data bigger than OSMP_MAX_PAYLOAD_LENGTH. Cutting off after %d bytes. Message len: %d bytes",OSMP_MAX_PAYLOAD_LENGTH,(count*OSMP_DataSize(datatype)));
+        actualLen = OSMP_MAX_PAYLOAD_LENGTH;
+    } 
 
-    shm_start->msg[first].len = (size_t) ((count) * OSMP_DataSize(datatype));
-    printf("size %ld\n", shm_start->msg[first].len);
+    shm_start->msg[first].len = actualLen;
+    //printf("sizeprintf("size %ld\n", shm_start->msg[first].len);
 
     shm_start->msg[first].type = datatype;
 
@@ -189,7 +195,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
     shm_start->msg[first].nextmsg = -1;
 
 
-    memcpy(shm_start->msg[first].data, buf, (size_t) (count*OSMP_DataSize(datatype)));
+    memcpy(shm_start->msg[first].data, buf, actualLen);
     //printf("sendbuf: %s\n", shm_start->msg[first].data);
 
     if(sem_wait(&shm_start->p[rank].mutex)==-1) {
@@ -255,10 +261,13 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
     }
     *source = shm_start->msg[first].src;
     *len = (int) shm_start->msg[first].len;
-
-
-
-    memcpy(buf,shm_start->msg[first].data,shm_start->msg[first].len);
+    //Länge größer als maximal erlaubte Länge? Info an den Nutzer, dass Nachricht abgeschnitten wird.
+    if(*len>OSMP_MAX_PAYLOAD_LENGTH ||*len > count*OSMP_DataSize(datatype) ){
+        debug("[osmplib.c] OSMP_Recv data bigger than OSMP_MAX_PAYLOAD_LENGTH OR accepted size of reciever (%d). Cutting off. Message len: %d bytes", count*OSMP_DataSize(datatype),*len);
+        *len = ((count*OSMP_DataSize(datatype))<OSMP_MAX_PAYLOAD_LENGTH) ? (count*OSMP_DataSize(datatype)) : OSMP_MAX_PAYLOAD_LENGTH ;
+    }
+    printf("Len: %d",*len);
+    memcpy(buf,shm_start->msg[first].data,(size_t)*len);
 
     if(sem_wait(&shm_start->emptymsg.mutex)==-1) {
         error("[OSMPLib.c] sem_wait Error");

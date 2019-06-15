@@ -47,6 +47,14 @@ int test02(int argc, char** argv);
  */
 int test03(int argc, char** argv);
 
+/**
+ * Test 04: Der Sender könnte größere Nachrichten senden als der Empfänger empfangen kann, oder sendet längere Nachrichten
+    als die maximale erlaubte Länge. Was passiert jeweils?
+ * @param argc
+ * @param argv
+ * @return
+ */
+int test04(int argc, char** argv);
 
 
 /**
