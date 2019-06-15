@@ -147,7 +147,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
         error("[OSMPLib.c] SHM not initialized");
         return OSMP_ERROR;
     }
-    debug("OSMPLib.c: OSMP_Send. Start");
+    debug("[OSMPLib.c] OSMP_Send. Start");
 
     if (sem_wait(&shm_start->p[rank].freeslots) == -1) {
         error("[OSMPLib.c] sem_wait Error");
@@ -239,7 +239,7 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
         error("[OSMPLib.c] SHM not initialized");
         return OSMP_ERROR;
     }
-    debug("OSMPLib.c: OSMP_Recv. Start");
+    debug("[OSMPLib.c] OSMP_Recv. Start");
 
 
     if(sem_wait(&shm_start->p[rank].fullslots)==-1) {
@@ -328,7 +328,7 @@ int OSMP_Finalize(void){
     //printf("rechnung: %d", sizeof(process) + OSMP_MAX_SLOTS * sizeof(message) + processes * sizeof(process));
 
     if(i==processes){
-        printf("Unlinking SHM of Rank: %d\n",rank);
+        debug("[OSMPLib.c] Unlinking SHM of Rank: %d\n",rank);
         rv=shm_unlink(SHMNAME);
         shm_start=NULL;
     }
@@ -365,7 +365,7 @@ int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSM
     }
     //printf("buf: %s\n", (char*)buf);
 
-    debug("OSMPLib.c: OSMP_iSend. Start");
+    debug("[OSMPLib.c] OSMP_iSend. Start");
 
 
     if(buf==NULL){
@@ -411,7 +411,7 @@ int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *l
         error("[OSMPLib.c] SHM not initialized");
         return OSMP_ERROR;
     }
-    debug("OSMPLib.c: OSMP_iRecv. Start");
+    debug("O[SMPLib.c] OSMP_iRecv. Start");
 
 
     if(buf==NULL){

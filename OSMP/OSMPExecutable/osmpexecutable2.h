@@ -56,6 +56,17 @@ int test03(int argc, char** argv);
  */
 int test04(int argc, char** argv);
 
+/**
+ * Test 05: Es werden mehr Nachrichten verschickt als die globalen Slots aufnehmen können.
+ * @param argc
+ * @param argv
+ * @return
+ */
+int test05(int argc, char** argv);
+
+
+
+
 
 /**
  * Ausführbare Datei, die von allen Prozessen geladen wird. Die Prozesse nutzen OSMPLib-Routinen um miteinander zu kommunizieren
