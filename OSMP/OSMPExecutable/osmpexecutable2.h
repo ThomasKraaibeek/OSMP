@@ -74,6 +74,14 @@ int test05(int argc, char** argv);
  */
 int test06(int argc, char** argv);
 
+/**
+ * Test 07: OSMP_RemoveRequest könnte aufgerufen werden obwohl der Requester noch verwendet wird.
+ * @param argc
+ * @param argv
+ * @return rv
+ */
+int test07(int argc, char** argv);
+
 
 /**
  * Ausführbare Datei, die von allen Prozessen geladen wird. Die Prozesse nutzen OSMPLib-Routinen um miteinander zu kommunizieren
