@@ -35,6 +35,7 @@ int main(int argc, char** argv) {
     return rv;
 }
 
+//Test-Nr 0
 int Send_Recv(int argc, char *argv[])
 {
     printf("Send_Recv..\n");
@@ -74,7 +75,7 @@ int Send_Recv(int argc, char *argv[])
     return rv;
 }
 
-
+//Test-Nr 1
 int Send_Irecv(int argc, char *argv[])
 {
 
@@ -118,6 +119,8 @@ int Send_Irecv(int argc, char *argv[])
     return rv;
 }
 
+
+//Test-Nr 2
 int Isend_Irecv(int argc, char *argv[])
 {
     printf("Isend_Irecv..\n");
@@ -167,6 +170,7 @@ int Isend_Irecv(int argc, char *argv[])
 
 }
 
+//Test-Nr 3
 int Isend_Recv(int argc, char *argv[])
 {
     printf("Isend_Recv..\n");
@@ -212,54 +216,7 @@ int Isend_Recv(int argc, char *argv[])
     return rv;
 
 }
-
-int Isend_Recv_proce(int argc, char *argv[])
-{
-    printf("Isend_Recv..\n");
-
-    int rv, size, rank, source, len, flag;
-    char *bufin, *bufout;
-    OSMP_Request myrequest;
-
-    rv = OSMP_Init( &argc, &argv );
-    rv = OSMP_Size( &size );
-    rv = OSMP_Rank( &rank );
-
-    if( size != 2 ) { /* Fehlerbehandlung */ }
-    if( rank == 0 )
-    { // OSMP process 0
-        bufin = malloc(1*strlen("hello world")); // check for != NULL
-        if(bufin==NULL) {
-
-        }
-        strncpy(bufin, "hello world",strlen("hello world")+1);
-
-        rv = OSMP_CreateRequest( &myrequest );
-        rv = OSMP_Isend( bufin, strlen("hello world"), &osmp_char, 1, myrequest );
-
-        OSMP_Test(myrequest, &flag);
-        printf("flag: %d\n", flag);
-        if(flag == 0){
-            rv = OSMP_Wait(myrequest);
-        }
-        rv = OSMP_RemoveRequest( &myrequest );
-    }
-    else
-    { // OSMP process 1
-        bufout = malloc(1*strlen("hello world")); // check for != NULL
-
-        rv = OSMP_Recv( bufout, strlen("hello world"), &osmp_char, &source, &len);
-
-        printf("OSMP process %d received message from %d: %s \n", rank, source, bufout);
-
-    }
-    rv = OSMP_Finalize();
-
-    return rv;
-
-}
-
-
+//Test-Nr 4
 int test01(int argc, char** argv){
 
     printf("Test01..\n");
@@ -310,6 +267,7 @@ int test01(int argc, char** argv){
     return rv;
 }
 
+//Test-Nr 5
 int test02(int argc,char** argv){
 
     printf("Test02\n");
@@ -352,6 +310,7 @@ int test02(int argc,char** argv){
     return rv;
 }
 
+//Test-Nr 6
 int test03(int argc, char** argv) {
 
     int size, rank, source, len;
@@ -376,16 +335,17 @@ int test03(int argc, char** argv) {
     return OSMP_SUCCESS;
 }
 
+//Test-Nr 7
 int test04(int argc, char** argv) {
 
     int size, rank, source, len;
-    char bufin[] = "oifhaowifhwihseoifhsdligepihsep8hfpseiohgoseihtoösemoiriuhgprhsgpoiehsp98ghpeuhiwgupeiuhfpsiodhpfegpoihdrpgodrhüghedprg5hsepihp5gueshpgiresfuherfpoipreogish4hhddddddddddddddddddddddddddffffffffffffffffffffffffffffqeqw qweqweqweqweqweqweqweqweasfsdghtrhztu5twessowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgosei\0", *bufout;
+    //char bufin[] = "oifhaowifhwihseoifhsdligepihsep8hfpseiohgoseihtoösemoiriuhgprhsgpoiehsp98ghpeuhiwgupeiuhfpsiodhpfegpoihdrpgodrhüghedprg5hsepihp5gueshpgiresfuherfpoipreogish4hhddddddddddddddddddddddddddffffffffffffffffffffffffffffqeqw qweqweqweqweqweqweqweqweasfsdghtrhztu5twessowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgoseiowifhwihseoifhsdligepihsep8hfpseiohgosei\0", *bufout;
     int intbufin[260];
     int intbufout[256];
     for(int i=0;i<260;i++){
         intbufin[i] = i;
     }
-    if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test03 OSMP_Init");
+    if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test04 OSMP_Init");
     if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test04 OSMP_Size");
     if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test04 OSMP_Rank");
 
@@ -396,7 +356,7 @@ int test04(int argc, char** argv) {
         if(OSMP_Send(intbufin, 250,&osmp_int,1)==OSMP_ERROR) error("[osmpexecutable2.c] Test04 OSMP_Send");
 
     }else{
-        if((bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH-4))==NULL)error("[osmpexecutable2.c] Calloc Fail");
+        //if((bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH-4))==NULL)error("[osmpexecutable2.c] Calloc Fail");
         //if(OSMP_Recv(bufout,OSMP_MAX_PAYLOAD_LENGTH-4,&osmp_char,&source,&len)==OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Recv");
         if(OSMP_Recv(intbufout,256,&osmp_int,&source,&len)==OSMP_ERROR) error("[osmpexecutable2.c] Test04 OSMP_Recv");
         //printf("OSMP process %d received message: %s \n", rank, bufout);
@@ -410,7 +370,7 @@ int test04(int argc, char** argv) {
     return OSMP_SUCCESS;
 }
 
-
+//Test-Nr 8
 int test05(int argc, char** argv) {
 
     int size, rank;
@@ -432,7 +392,7 @@ int test05(int argc, char** argv) {
     return OSMP_SUCCESS;
 }
 
-
+//Test-Nr 9
 int test06(int argc, char** argv){
 
     int size, rank, source, len, flag;
@@ -471,7 +431,7 @@ int test06(int argc, char** argv){
     return OSMP_SUCCESS;
 }
 
-
+//Test-Nr 10
 int test07(int argc, char** argv){
 
     int size, rank, source, len, flag;
