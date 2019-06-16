@@ -30,13 +30,13 @@ void debug(char* message, ...) {
 }
 
 int error(char* msg, ...){
-    debug("%s | %s\n", msg, strerror(errno));
+    debug("ERROR: %s",msg);// | %s\n", msg, strerror(errno));
     return OSMP_ERROR;
 }
 
 int OSMP_Init(int *argc, char ***argv){
 
-    debug("OSMPLib.c: OSMP_Init. Start");
+    debug("[OSMPLib.c] OSMP_Init. Start");
 
 
     start = clock();
@@ -146,8 +146,13 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
     if (shm_start == NULL) {
         error("[OSMPLib.c] SHM not initialized");
         return OSMP_ERROR;
-    }
+    }    
     debug("[OSMPLib.c] OSMP_Send. Start");
+
+    if(buf==NULL){
+        error("[OSMPLib.c] buf null");
+        return OSMP_ERROR;
+    }
 
     if (sem_wait(&shm_start->p[rank].freeslots) == -1) {
         error("[OSMPLib.c] sem_wait Error");
@@ -241,6 +246,10 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
     }
     debug("[OSMPLib.c] OSMP_Recv. Start");
 
+    if(buf==NULL){
+        error("[OSMPLib.c] buf null");
+        return OSMP_ERROR;
+    }
 
     if(sem_wait(&shm_start->p[rank].fullslots)==-1) {
         error("[OSMPLib.c] sem_wait Error");
@@ -411,7 +420,7 @@ int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *l
         error("[OSMPLib.c] SHM not initialized");
         return OSMP_ERROR;
     }
-    debug("O[SMPLib.c] OSMP_iRecv. Start");
+    debug("[OSMPLib.c] OSMP_iRecv. Start");
 
 
     if(buf==NULL){
