@@ -13,7 +13,7 @@ sem_t mutex;
 sem_t emptyslots;
 
 clock_t start;
-
+char* shmname;
 int processes = 0, rank = 0;
 
 void debug(char* message, ...) {
@@ -35,14 +35,12 @@ int error(char* msg, ...){
 }
 
 int OSMP_Init(int *argc, char ***argv){
-
     debug("[OSMPLib.c] OSMP_Init. Start");
-
-
     start = clock();
 
-    int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
-
+    shmname = (*argv)[2];
+    
+    int fd = shm_open(shmname, O_CREAT | O_RDWR, 0640);
 
     if(fd==-1){
         error("[OSMPLib.c] OSMP_Init Fehler bei shm_open");
@@ -151,6 +149,10 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
 
     if(buf==NULL){
         error("[OSMPLib.c] OSMP_Send buf null");
+        return OSMP_ERROR;
+    }
+    if(dest>=processes){
+        debug("[OSMPLib.c] OSMP_Send Destination unreachable. %d not a valid OSMP_Process no.",dest);
         return OSMP_ERROR;
     }
  
@@ -340,7 +342,7 @@ int OSMP_Finalize(void){
 
     if(i==processes){
         debug("[OSMPLib.c] OSMP_Finalize Unlinking SHM of Rank: %d\n",rank);
-        rv=shm_unlink(SHMNAME);
+        rv=shm_unlink(shmname);
         shm_start=NULL;
     }
     return rv;
@@ -374,7 +376,6 @@ int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSM
     if(shm_start==NULL){
         error("[OSMPLib.c] OSMP_iSend SHM not initialized");
     }
-    //printf("buf: %s\n", (char*)buf);
 
     debug("[OSMPLib.c] OSMP_iSend. Start");
 
@@ -385,6 +386,11 @@ int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSM
     }
     if(request==NULL){
         error("[OSMPLib.c] OSMP_iSend request null");
+        return OSMP_ERROR;
+    }
+
+    if(dest>=processes){
+        debug("[OSMPLib.c] OSMP_Send Destination unreachable. %d not a valid OSMP_Process no.",dest);
         return OSMP_ERROR;
     }
 

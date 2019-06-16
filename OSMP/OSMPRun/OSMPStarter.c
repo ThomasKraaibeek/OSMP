@@ -80,9 +80,11 @@ int main(int argc, char **argv) {
     unsigned int processAmount = (unsigned int) inputprocessAmount;
 
     pid_t pid;
-
+    char* shmname = calloc(1,strlen("myshm")+sizeof(pid_t));
+    sprintf(shmname,"myshm_%d",getpid());
+    argv[4] = shmname;
     //Erzeuge shared memory. 2. Argument: Zugriffsrechte der Prozesse, 3. Argument: Zugriffsrechte der Benutzer
-    int fd = shm_open(SHMNAME, O_CREAT | O_RDWR, 0640);
+    int fd = shm_open(shmname, O_CREAT | O_RDWR, 0640);
     if (fd == -1) {
         error("[OSMPStarter.c] Fehler bei shm_open");
         return OSMP_ERROR;
@@ -124,8 +126,9 @@ int main(int argc, char **argv) {
             //printf("ss%s\n",*argv[1]);
             fflush(stdout);
             //Name der auszuführenden Datei und alle Argumente
-            execlp(argv[2], argv[2], argv[3], NULL);
-            error("Fehler bei execlp %s", argv[2]);
+            execlp(argv[2], argv[2], argv[3],argv[4], NULL);
+            //execlp(argv[2], *argv);
+            debug("Fehler bei execlp");
 
             //Parent braucht durch das Sleep einige Zeit um was in den Speicher zu schreiben. Hier wird direkt ausgelesen. Speicher muss leer sein.
             //strncmp(map, "", strlen(map)) == 0 ? printf("p(%d): Speicher leer!\n", i) : printf("p(%d): %s\n", i, (char *) map);

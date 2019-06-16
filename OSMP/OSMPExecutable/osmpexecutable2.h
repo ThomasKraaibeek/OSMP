@@ -82,6 +82,15 @@ int test06(int argc, char** argv);
  */
 int test07(int argc, char** argv);
 
+/**
+ * Test 08: Fehlerhafte Parameter wie Nullpointer, ungültige Prozess-IDs o.ä. sollten nicht zum Absturz führen    
+    Z.B. sendet der Sender an einen nicht vorhandenen Prozess.
+ * @param argc
+ * @param argv
+ * @return rv
+ */
+int test08(int argc, char** argv);
+
 
 /**
  * Ausführbare Datei, die von allen Prozessen geladen wird. Die Prozesse nutzen OSMPLib-Routinen um miteinander zu kommunizieren

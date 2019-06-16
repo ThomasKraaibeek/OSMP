@@ -44,6 +44,7 @@ int main(int argc, char** argv){
     if(flag == 0){
         //rv = OSMP_Wait(request);
     }
+    sleep(2);
 
     //rv = OSMP_RemoveRequest(request);
 
