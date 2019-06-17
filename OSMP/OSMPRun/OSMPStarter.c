@@ -151,7 +151,7 @@ int main(int argc, char **argv) {
     for (int i = 0; i < processAmount; i++) {
 
         waitpid(-1, NULL, 0);
-        shm_start->processAmount--;
+        //shm_start->processAmount--;
     }
 
     //shm_unlink(SHMNAME);

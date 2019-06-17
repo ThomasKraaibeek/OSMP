@@ -35,7 +35,7 @@ int error(char* msg, ...){
 }
 
 int OSMP_Init(int *argc, char ***argv){
-    debug("[OSMPLib.c] OSMP_Init. Start");
+    debug("[OSMPLib.c] OSMP_Init - Start");
     start = clock();
 
     shmname = (*argv)[2];
@@ -74,6 +74,8 @@ int OSMP_Init(int *argc, char ***argv){
     }
     OSMP_Rank(&rank);
 
+    debug("[OSMPLib.c] OSMP_Init - End");
+
     return OSMP_SUCCESS;
 }
 
@@ -101,6 +103,9 @@ int OSMP_DataSize(OSMP_Datatype datatype){
  * @return OSMP_SUCCESS
  */
 int OSMP_Size(int *size){
+
+    debug("[OSMPLib.c] OSMP_Size - Start");
+
     if(shm_start==NULL){
         error("[OSMPLib.c] OSMP_Size SHM not initialized");
         return OSMP_ERROR;
@@ -109,6 +114,7 @@ int OSMP_Size(int *size){
     *size = shm_start->processAmount;
     //printf("ProcessAmount: %d",shm_start->processAmount);
 
+    debug("[OSMPLib.c] OSMP_Send - End");
     return OSMP_SUCCESS;
 
 }
@@ -118,6 +124,9 @@ int OSMP_Size(int *size){
  * @return OSMP_SUCCESS
  */
 int OSMP_Rank(int *rank){
+
+    //debug("[OSMPLib.c] OSMP_Rank - Start");
+
     if(shm_start==NULL){
         error("[OSMPLib.c] OSMP_Rank SHM not initialized");
         return OSMP_ERROR;
@@ -127,25 +136,20 @@ int OSMP_Rank(int *rank){
         if (shm_start->p[i].pid == getpid()) *rank = i;
     }
 
+    //debug("[OSMPLib.c] OSMP_Rank - End");
     return OSMP_SUCCESS;
 
 }
 
-/**
- *
- * @param buf Nachricht
- * @param count Anzahl der Elemente in der Nachricht
- * @param datatype
- * @param dest Zielprozess
- * @return
- */
+
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
+
+    debug("[OSMPLib.c] OSMP_Send - Start");
 
     if (shm_start == NULL) {
         error("[OSMPLib.c] OSMP_Send SHM not initialized");
         return OSMP_ERROR;
-    }    
-    debug("[OSMPLib.c] OSMP_Send. Start");
+    }
 
     if(buf==NULL){
         error("[OSMPLib.c] OSMP_Send buf null");
@@ -189,7 +193,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
     size_t actualLen = (size_t) (count*OSMP_DataSize(datatype));
     //Länge größer als maximal erlaubte Länge? Info an den Nutzer, dass Nachricht abgeschnitten wird.
     if((count*OSMP_DataSize(datatype))>OSMP_MAX_PAYLOAD_LENGTH){
-        debug("[osmplib.c] OSMP_Send data bigger than OSMP_MAX_PAYLOAD_LENGTH. Cutting off after %d bytes. Message len: %d bytes",OSMP_MAX_PAYLOAD_LENGTH,(count*OSMP_DataSize(datatype)));
+        debug("[osmplib.c] OSMP_Send data bigger than OSMP_MAX_PAYLOAD_LENGTH. Message len: %d bytes. Cutting off after %d bytes.",(count*OSMP_DataSize(datatype)),OSMP_MAX_PAYLOAD_LENGTH);
         actualLen = OSMP_MAX_PAYLOAD_LENGTH;
     } 
 
@@ -197,8 +201,6 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
     //printf("sizeprintf("size %ld\n", shm_start->msg[first].len);
 
     shm_start->msg[first].type = datatype;
-
-    debug("[OSMPLib.c] OSMP_Send Datatype mismatch: %d, %d",*((int*)(shm_start->msg[first].type)), *((int*)datatype));
 
     //printf("rank: %d\n", rank);
     shm_start->msg[first].src = rank;
@@ -231,27 +233,18 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
         return OSMP_ERROR;
     }
 
-
+    debug("[OSMPLib.c] OSMP_Send - End");
     return OSMP_SUCCESS;
 }
 
-/**
- *
- * @param buf
- * @param count
- * @param datatype
- * @param source
- * @param len
- * @return
- */
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *len){
 
-    //debug("[OSMPLib.c] OSMP_Recvoben Datatype mismatch: %d, %d",((int*)(shm_start->msg[shm_start->p[rank].firstmsg].type)), *((int*)datatype));
+    debug("[OSMPLib.c] OSMP_Recv - Start");
+
     if(shm_start==NULL){
         error("[OSMPLib.c] OSMP_Recv SHM not initialized");
         return OSMP_ERROR;
     }
-    debug("[OSMPLib.c] OSMP_Recv. Start");
 
     if(buf==NULL){
         error("[OSMPLib.c] OSMP_Recv buf null");
@@ -270,13 +263,6 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
     int first = shm_start->p[rank].firstmsg;
 
     shm_start->p[rank].firstmsg = shm_start->msg[first].nextmsg;
-
-    //int typenr = ((int*)(shm_start->msg[first].type));
-    //debug("[OSMPLib.c] OSMP_Recv Datatype mismatch: %d, %d",typenr, *((int*)datatype));
-    if(*((int*)shm_start->msg[first].type) != *((int*)datatype)){
-        //debug("[OSMPLib.c] OSMP_Recv Datatype mismatch: %d,%d",*((int*)shm_start->msg[first].type), *((int*)datatype));
-        return OSMP_ERROR;
-    }
 
     if(sem_post(&shm_start->p[rank].mutex)==-1) {
         error("[OSMPLib.c] OSMP_Recv sem_post Error");
@@ -312,15 +298,15 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
         return OSMP_ERROR;
     }
 
+    debug("[OSMPLib.c] OSMP_Recv - End");
     return OSMP_SUCCESS;
 
 }
 
-/**
- *
- * @return
- */
 int OSMP_Finalize(void){
+
+    debug("[OSMPLib.c] OSMP_Finalize - Start");
+
     if(shm_start==NULL){
         error("[OSMPLib.c] OSMP_Finalize SHM not initialized");
         return OSMP_ERROR;
@@ -355,6 +341,8 @@ int OSMP_Finalize(void){
         rv=shm_unlink(shmname);
         shm_start=NULL;
     }
+
+    debug("[OSMPLib.c] OSMP_Finalize - End");
     return rv;
 }
 
@@ -383,12 +371,11 @@ void* t_recv(void *request){
 
 int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSMP_Request request){
 
+    debug("[OSMPLib.c] OSMP_iSend - Start");
+
     if(shm_start==NULL){
         error("[OSMPLib.c] OSMP_iSend SHM not initialized");
     }
-
-    debug("[OSMPLib.c] OSMP_iSend. Start");
-
 
     if(buf==NULL){
         error("[OSMPLib.c] OSMP_iSend buf null");
@@ -420,8 +407,6 @@ int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSM
         return OSMP_ERROR;
     }
 
-//    memcpy(req->buffer,buf,count);
-
     pthread_t pthread;
 
     pthread_create(&pthread,NULL,(*t_send),request);
@@ -429,17 +414,19 @@ int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSM
 
     rv = OSMP_SUCCESS;
 
+    debug("[OSMPLib.c] OSMP_iSend - End");
     return rv;
 
 }
 
 int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len, OSMP_Request request){
+
+    debug("[OSMPLib.c] OSMP_iRecv - Start");
+
     if(shm_start==NULL){
         error("[OSMPLib.c] OSMP_IRecv SHM not initialized");
         return OSMP_ERROR;
     }
-    debug("[OSMPLib.c] OSMP_iRecv. Start");
-
 
     if(buf==NULL){
         error("[OSMPLib.c] OSMP_IRecv buf null");
@@ -447,12 +434,6 @@ int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *l
     }
     if(request==NULL){
         error("[OSMPLib.c] OSMP_IRecv request null");
-        return OSMP_ERROR;
-    }
-
-
-    if(shm_start->msg[shm_start->p[rank].firstmsg].type != datatype){
-        error("[OSMPLib.c] OSMP_Recv Datatype mismatch");
         return OSMP_ERROR;
     }
 
@@ -477,25 +458,32 @@ int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *l
     pthread_detach(pthread);
     //debug("Length: %d",len);
 
+    debug("[OSMPLib.c] OSMP_iRecv - End");
     return OSMP_SUCCESS;
 }
 
 int OSMP_Test(OSMP_Request request, int *flag){
+
+    debug("[OSMPLib.c] OSMP_Test - Start");
+
     if(shm_start==NULL){
         error("[OSMPLib.c] SHM not initialized");
         return OSMP_ERROR;
     }
+
     IRequest *req = (IRequest*) request;
     if(sem_getvalue(&req->mutex, flag)) {
         error("[OSMPLib.c] request running in sem_getvalue");
     }
+
+    debug("[OSMPLib.c] OSMP_Test - End");
     return OSMP_SUCCESS;
 
 }
 
 int OSMP_Wait (OSMP_Request request){
 
-    debug("[OSMPLib.c] Wait. Start");
+    debug("[OSMPLib.c] OSMP_Wait - Start");
 
     if(shm_start==NULL){
         error("[OSMPLib.c] SHM not initialized");
@@ -517,11 +505,12 @@ int OSMP_Wait (OSMP_Request request){
         return OSMP_ERROR;
     }*/
 
+    debug("[OSMPLib.c] OSMP_Wait - End");
     return OSMP_SUCCESS;
 }
 
 int OSMP_CreateRequest(OSMP_Request *request){
-    debug("[OSMPLib.c] OSMP_CreateRequest");
+    debug("[OSMPLib.c] OSMP_CreateRequest - Start");
 
     if(shm_start==NULL){
         error("[OSMPLib.c] SHM not initialized");
@@ -550,10 +539,13 @@ int OSMP_CreateRequest(OSMP_Request *request){
 
     *request = req;
 
+    debug("[OSMPLib.c] OSMP_CreateRequest - End");
     return OSMP_SUCCESS;
 }
 
 int OSMP_RemoveRequest(OSMP_Request *request){
+
+    debug("[OSMPLib.c] OSMP_RemoveRequest - Start");
 
     if(shm_start==NULL){
         error("[OSMPLib.c] SHM not initialized");
@@ -582,5 +574,6 @@ int OSMP_RemoveRequest(OSMP_Request *request){
         return OSMP_ERROR;
     }
     //free(*request); //@TODO *request?
+    debug("[OSMPLib.c] OSMP_RemoveRequest - End");
     return OSMP_SUCCESS;
 }

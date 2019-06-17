@@ -11,14 +11,24 @@
 
 
 int main(int argc, char** argv) {
-    int testnr = atoi(argv[1]);
+
     int rv = OSMP_ERROR;
+
+    for(int i = 0; i<strlen(argv[1]); i++){
+        printf("argv:%s\n", (argv[1])+i);
+        if(*((argv[1])+i) < 48 || *((argv[1])+i) > 57){
+            error("Not a valid test no. Choose between 0 and 12.");
+            return rv;
+        }
+    }
+
+    int testnr = atoi(argv[1]);
 
     if(testnr==0) rv = Send_Recv(argc,argv);
     else if(testnr==1) rv = Send_Irecv(argc,argv);
     else if(testnr==2) rv = Isend_Irecv(argc,argv);
     else if(testnr==3) rv = Isend_Recv(argc,argv);
-    else if(testnr==4) rv = test01(argc, argv);
+    else if(testnr==4) rv = test01(argc,argv);
     else if(testnr==5) rv = test02(argc,argv);
     else if(testnr==6) rv = test03(argc,argv);
     else if(testnr==7) rv = test04(argc,argv);
@@ -28,7 +38,7 @@ int main(int argc, char** argv) {
     else if(testnr==11) rv = test08(argc,argv);
     else if(testnr==12) rv = test09(argc,argv);
     else{
-        error("Not a valid test no.");
+        error("Not a valid test no. Choose between 0 and 12.");
     }
 
     if(rv==OSMP_ERROR) error("Failed Test");    
@@ -149,7 +159,7 @@ int Isend_Irecv(int argc, char *argv[])
         rv = OSMP_Isend( bufin, strlen("hello world"), &osmp_char, 1, myrequest );
 
         OSMP_Test(myrequest, &flag);
-        printf("flag: %d\n", flag);
+        //printf("flag: %d\n", flag);
         if(flag == 0){
             rv = OSMP_Wait(myrequest);
         }
@@ -199,7 +209,7 @@ int Isend_Recv(int argc, char *argv[])
         rv = OSMP_Isend( bufin, strlen("hello world"), &osmp_char, 1, myrequest );
 
         OSMP_Test(myrequest, &flag);
-        printf("flag: %d\n", flag);
+        //printf("flag: %d\n", flag);
         if(flag == 0){
             rv = OSMP_Wait(myrequest);
         }
