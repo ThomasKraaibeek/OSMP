@@ -10,20 +10,33 @@ int osmp_char = OSMP_BYTE;
 int osmp_double = OSMP_DOUBLE;
 
 /**
- *
+ * Send-Recv-Kommunikation zwischen zwei Prozessen
  * @param argc
  * @param argv
  */
 int Send_Recv(int argc, char *argv[]);
+
 /**
- *
+ * Send-Irecv-Kommunikation zwischen zwei Prozessen
  * @param argc
  * @param argv
  */
 int Send_Irecv(int argc, char **argv);
 
+/**
+ * Isend-Irecv-Kommunikation zwischen zwei Prozessen
+ * @param argc
+ * @param argv
+ * @return
+ */
 int Isend_Irecv(int argc, char *argv[]);
 
+/**
+ * Isend-Recv-Kommunikation zwischen zwei Prozessen
+ * @param argc
+ * @param argv
+ * @return
+ */
 int Isend_Recv(int argc, char *argv[]);
 
 /**
@@ -100,8 +113,20 @@ int test08(int argc, char** argv);
  */
 int test09(int argc, char** argv);
 
+/**
+ * Send-Recv-Kommunikation zwischen beliebig vielen Prozessen
+ * @param argc
+ * @param argv
+ * @return
+ */
 int test10(int argc, char** argv);
 
+/**
+ * Isend-Irecv-Kommunikation zwischen beliebig vielen Prozessen
+ * @param argc
+ * @param argv
+ * @return
+ */
 int test11(int argc, char** argv);
 
 /**

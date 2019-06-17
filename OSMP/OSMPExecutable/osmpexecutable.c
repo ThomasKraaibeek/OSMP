@@ -58,11 +58,11 @@ int Send_Recv(int argc, char *argv[])
     int rv, size, rank, source;
     int bufin[2], bufout[2], len;
     sem_t mutex;
-    if(sem_init(&mutex,1,1)==-1) error("[osmpexecutable2.c] sem_init");
+    if(sem_init(&mutex,1,1)==-1) error("[osmpexecutable.c] sem_init");
     
-    if(OSMP_Init( &argc, &argv ) == OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Init");
-    if(OSMP_Size( &size ) == OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Size");
-    if(OSMP_Rank( &rank ) == OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Rank");
+    if(OSMP_Init( &argc, &argv ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Init");
+    if(OSMP_Size( &size ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Size");
+    if(OSMP_Rank( &rank ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Rank");
 
     if(size != 2){
         error("Invalid number of processes. 2 processes required.");
@@ -73,7 +73,7 @@ int Send_Recv(int argc, char *argv[])
     { // OSMP process 0
         bufin[0] = 4711;
         bufin[1] = 4712;
-        if(OSMP_Send( bufin, 2, &osmp_int, 1 ) == OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Send");
+        if(OSMP_Send( bufin, 2, &osmp_int, 1 ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Send");
         //rv = sem_post(&mutex);
         rv=sem_wait(&mutex);
     }
@@ -243,37 +243,37 @@ int test01(int argc, char** argv){
     fflush(stdout);
 
 
-    if(OSMP_Size(&size)==OSMP_ERROR) debug("[osmpexecutable2.c] OSMP_Size");
-    if(OSMP_Rank(&rank)==OSMP_ERROR) debug("[osmpexecutable2.c] OSMP_Rank");
+    if(OSMP_Size(&size)==OSMP_ERROR) debug("[osmpexecutable.c] OSMP_Size");
+    if(OSMP_Rank(&rank)==OSMP_ERROR) debug("[osmpexecutable.c] OSMP_Rank");
 
-    if(OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH, &osmp_int, rank)==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Send");
+    if(OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH, &osmp_int, rank)==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Send");
 
     bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH);
-    if(bufout==NULL) error("[osmpexecutable2.c] Calloc fail");
+    if(bufout==NULL) error("[osmpexecutable.c] Calloc fail");
 
-    if(OSMP_Recv(bufout, OSMP_MAX_PAYLOAD_LENGTH, &osmp_int, &source, &len)==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Recv");
+    if(OSMP_Recv(bufout, OSMP_MAX_PAYLOAD_LENGTH, &osmp_int, &source, &len)==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Recv");
 
     //printf("Recieved from %d : %s\n",source,bufout);
 
 
-    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Finalize");
+    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Finalize");
     fflush(stdout);
 
 
     //Part2
-    if(OSMP_Init(&argc,&argv)==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Init");
-    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Finalize");
+    if(OSMP_Init(&argc,&argv)==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Init");
+    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Finalize");
 
 
-    if(OSMP_Size(&size)==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Size");
-    if(OSMP_Rank(&rank)==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Rank");
+    if(OSMP_Size(&size)==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Size");
+    if(OSMP_Rank(&rank)==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Rank");
 
-    if(OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH, &osmp_int, rank)==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Send");
+    if(OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH, &osmp_int, rank)==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Send");
 
     bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH);
-    if(bufout==NULL) error("[osmpexecutable2.c] Calloc fail");
+    if(bufout==NULL) error("[osmpexecutable.c] Calloc fail");
 
-    if(OSMP_Recv(bufout, OSMP_MAX_PAYLOAD_LENGTH, &osmp_int, &source, &len)==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Recv");
+    if(OSMP_Recv(bufout, OSMP_MAX_PAYLOAD_LENGTH, &osmp_int, &source, &len)==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Recv");
     //printf("Recieved from %d : %s\n",source,bufout);
     fflush(stdout);
 
@@ -295,7 +295,7 @@ int test02(int argc,char** argv){
     }
     rv = OSMP_Size( &size );
     rv = OSMP_Rank( &rank );
-    if( size != 2 ) error("[osmpexecutable2.c] size!=2 ERROR");
+    if( size != 2 ) error("[osmpexecutable.c] size!=2 ERROR");
     if( rank == 0 )
     { // OSMP process 0
 
@@ -309,7 +309,7 @@ int test02(int argc,char** argv){
         }
         rv = OSMP_CreateRequest( &myrequest );
         rv = OSMP_Irecv( bufout, OSMP_MAX_PAYLOAD_LENGTH, &osmp_char, &source, &len, myrequest );
-        if(rv==OSMP_ERROR) debug("[osmpexecutable2.c] OSMP_IRecv error");
+        if(rv==OSMP_ERROR) debug("[osmpexecutable.c] OSMP_IRecv error");
         //
         // do something important...
         //
@@ -331,22 +331,22 @@ int test03(int argc, char** argv) {
     char *bufin = "Test Message", *bufout;
 
     if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test03 OSMP_Init");
-    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Size");
-    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Rank");
+    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test03 OSMP_Size");
+    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test03 OSMP_Rank");
 
-    if (size != 2) error("[osmpexecutable2.c] Test03 Size!=2");
+    if (size != 2) error("[osmpexecutable.c] Test03 Size!=2");
 
     if(rank==0){
         for(int i = 0;i<18;i++){
-            if(OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH,&osmp_char,1)==OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Send");
+            if(OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH,&osmp_char,1)==OSMP_ERROR) error("[osmpexecutable.c] Test03 OSMP_Send");
         }
     }else{
-        if((bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH))==NULL)error("[osmpexecutable2.c] Calloc Fail");
-        if(OSMP_Recv(bufout,OSMP_MAX_PAYLOAD_LENGTH,&osmp_char,&source,&len)==OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Recv");
+        if((bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH))==NULL)error("[osmpexecutable.c] Calloc Fail");
+        if(OSMP_Recv(bufout,OSMP_MAX_PAYLOAD_LENGTH,&osmp_char,&source,&len)==OSMP_ERROR) error("[osmpexecutable.c] Test03 OSMP_Recv");
         printf("OSMP process %d received message: %s \n", rank, bufout);
 
     }
-    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Finalize");
+    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Finalize");
 
     return OSMP_SUCCESS;
 }
@@ -362,26 +362,26 @@ int test04(int argc, char** argv) {
         intbufin[i] = i;
     }
     if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test04 OSMP_Init");
-    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test04 OSMP_Size");
-    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test04 OSMP_Rank");
+    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test04 OSMP_Size");
+    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test04 OSMP_Rank");
 
-    //if (size != 2) error("[osmpexecutable2.c] Test03 Size!=2");
+    //if (size != 2) error("[osmpexecutable.c] Test03 Size!=2");
 
     if(rank==0){
-        //if(OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH,&osmp_char,1)==OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Send");
-        if(OSMP_Send(intbufin, 250,&osmp_int,1)==OSMP_ERROR) error("[osmpexecutable2.c] Test04 OSMP_Send");
+        //if(OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH,&osmp_char,1)==OSMP_ERROR) error("[osmpexecutable.c] Test03 OSMP_Send");
+        if(OSMP_Send(intbufin, 250,&osmp_int,1)==OSMP_ERROR) error("[osmpexecutable.c] Test04 OSMP_Send");
 
     }else{
-        //if((bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH-4))==NULL)error("[osmpexecutable2.c] Calloc Fail");
-        //if(OSMP_Recv(bufout,OSMP_MAX_PAYLOAD_LENGTH-4,&osmp_char,&source,&len)==OSMP_ERROR) error("[osmpexecutable2.c] Test03 OSMP_Recv");
-        if(OSMP_Recv(intbufout,256,&osmp_int,&source,&len)==OSMP_ERROR) error("[osmpexecutable2.c] Test04 OSMP_Recv");
+        //if((bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH-4))==NULL)error("[osmpexecutable.c] Calloc Fail");
+        //if(OSMP_Recv(bufout,OSMP_MAX_PAYLOAD_LENGTH-4,&osmp_char,&source,&len)==OSMP_ERROR) error("[osmpexecutable.c] Test03 OSMP_Recv");
+        if(OSMP_Recv(intbufout,256,&osmp_int,&source,&len)==OSMP_ERROR) error("[osmpexecutable.c] Test04 OSMP_Recv");
         //printf("OSMP process %d received message: %s \n", rank, bufout);
         //OSMP_SEND 250 kommt rein, OSMP_RECV 256 akzeptiert, array ausgabe zu lang TRASH DATA
         for(int i = 0;i<256;i++){
             //printf("%d\n",intbufout[i]);
         }
     }
-    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Finalize");
+    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Finalize");
 
     return OSMP_SUCCESS;
 }
@@ -394,26 +394,26 @@ int test05(int argc, char** argv) {
     char *bufout;
 
     if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test05 OSMP_Init");
-    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test05 OSMP_Size");
-    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test05 OSMP_Rank");
+    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test05 OSMP_Size");
+    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test05 OSMP_Rank");
 
-    //if (size != 2) error("[osmpexecutable2.c] Test05 Size!=2");
+    //if (size != 2) error("[osmpexecutable.c] Test05 Size!=2");
 
     if(rank==0){
         for(int i = 0;i<OSMP_MAX_MESSAGES_PROC+2;i++){
-            //debug("[OSMPExecutable2.c] Trying to send....%d",i);
-            if(OSMP_Send(bufin, (int)strlen(bufin),&osmp_char,1)==OSMP_ERROR) error("[osmpexecutable2.c] Test05 OSMP_Send");
+            //debug("[osmpexecutable.c] Trying to send....%d",i);
+            if(OSMP_Send(bufin, (int)strlen(bufin),&osmp_char,1)==OSMP_ERROR) error("[osmpexecutable.c] Test05 OSMP_Send");
         }
     }else{
         sleep(3);
-        if((bufout = calloc(1,strlen(bufin)))==NULL)error("[osmpexecutable2.c] Calloc Fail");
+        if((bufout = calloc(1,strlen(bufin)))==NULL)error("[osmpexecutable.c] Calloc Fail");
         for(int i = 0;i<OSMP_MAX_MESSAGES_PROC+2;i++){
-            //debug("[OSMPExecutable2.c] Trying to receive....%d",i);
-            if(OSMP_Recv(bufout,(int)strlen(bufin),&osmp_int,&source,&len)==OSMP_ERROR) error("[osmpexecutable2.c] Test05 OSMP_Send");
+            //debug("[osmpexecutable.c] Trying to receive....%d",i);
+            if(OSMP_Recv(bufout,(int)strlen(bufin),&osmp_int,&source,&len)==OSMP_ERROR) error("[osmpexecutable.c] Test05 OSMP_Send");
             printf("OSMP process %d received message: %s \n", rank, bufout);
         }
     }
-    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Finalize");
+    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Finalize");
 
     return OSMP_SUCCESS;
 }
@@ -428,31 +428,31 @@ int test06(int argc, char** argv){
     OSMP_Request myrequest;
 
     if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test06 OSMP_Init");
-    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test06 OSMP_Size");
-    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test06 OSMP_Rank");
+    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test06 OSMP_Size");
+    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test06 OSMP_Rank");
 
 
     if(rank==0){ 
-        //if (OSMP_CreateRequest(&myrequest)==OSMP_ERROR) error("[osmpexecutable2.c] Test06 OSMP_CreateRequest");
+        //if (OSMP_CreateRequest(&myrequest)==OSMP_ERROR) error("[osmpexecutable.c] Test06 OSMP_CreateRequest");
         if(OSMP_Isend(bufin,OSMP_MAX_PAYLOAD_LENGTH,&osmp_char,rank,myrequest)==OSMP_ERROR){
-             error("[osmpexecutable2.c] Test06 OSMP_Send");
+             error("[osmpexecutable.c] Test06 OSMP_Send");
              return OSMP_ERROR;
         }
         OSMP_Test(myrequest, &flag);
         if(flag == 0){
-            if(OSMP_Wait(myrequest)==OSMP_ERROR) error("[osmpexecutable2.c] Test06 OSMP_Wait");
+            if(OSMP_Wait(myrequest)==OSMP_ERROR) error("[osmpexecutable.c] Test06 OSMP_Wait");
         }
-        if(OSMP_RemoveRequest( &myrequest )==OSMP_ERROR) error("[osmpexecutable2.c] Test06 OSMP_RemoveRequest");
+        if(OSMP_RemoveRequest( &myrequest )==OSMP_ERROR) error("[osmpexecutable.c] Test06 OSMP_RemoveRequest");
     }else{
-        //if(OSMP_CreateRequest(&myrequest)==OSMP_ERROR) error("[osmpexecutable2.c] Test06 OSMP_CreateRequest");
+        //if(OSMP_CreateRequest(&myrequest)==OSMP_ERROR) error("[osmpexecutable.c] Test06 OSMP_CreateRequest");
         if(OSMP_Irecv(bufout, OSMP_MAX_PAYLOAD_LENGTH, &osmp_char, &source, &len, myrequest)==OSMP_ERROR){
-             error("[osmpexecutable2.c] Test06 OSMP_IRecv");
+             error("[osmpexecutable.c] Test06 OSMP_IRecv");
              return OSMP_ERROR;
         }
         printf("OSMP process %d received message: %s \n", rank, bufout);
-        if(OSMP_RemoveRequest( &myrequest )==OSMP_ERROR) error("[osmpexecutable2.c] Test06 OSMP_RemoveRequest");
+        if(OSMP_RemoveRequest( &myrequest )==OSMP_ERROR) error("[osmpexecutable.c] Test06 OSMP_RemoveRequest");
     }
-    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Finalize");
+    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Finalize");
 
     return OSMP_SUCCESS;
 }
@@ -465,29 +465,29 @@ int test07(int argc, char** argv){
     OSMP_Request myrequest;
 
     if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test07 OSMP_Init");
-    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test07 OSMP_Size");
-    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test07 OSMP_Rank");
+    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test07 OSMP_Size");
+    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test07 OSMP_Rank");
 
 
     if(rank==0){ 
-        if (OSMP_CreateRequest(&myrequest)==OSMP_ERROR) error("[osmpexecutable2.c] Test07 OSMP_CreateRequest");
+        if (OSMP_CreateRequest(&myrequest)==OSMP_ERROR) error("[osmpexecutable.c] Test07 OSMP_CreateRequest");
         for(int i = 0;i<OSMP_MAX_MESSAGES_PROC+2;i++){
             if(OSMP_Isend(bufin,OSMP_MAX_PAYLOAD_LENGTH,&osmp_char,rank,myrequest)==OSMP_ERROR){
-                error("[osmpexecutable2.c] Test07 OSMP_Send");
+                error("[osmpexecutable.c] Test07 OSMP_Send");
                 return OSMP_ERROR;
             }
             if(OSMP_RemoveRequest( &myrequest )==OSMP_ERROR){
-                error("[osmpexecutable2.c] Test07 OSMP_RemoveRequest");
+                error("[osmpexecutable.c] Test07 OSMP_RemoveRequest");
                 return OSMP_ERROR;
             } 
         }
         
         OSMP_Test(myrequest, &flag);
         if(flag == 0){
-            if(OSMP_Wait(myrequest)==OSMP_ERROR) error("[osmpexecutable2.c] Test07 OSMP_Wait");
+            if(OSMP_Wait(myrequest)==OSMP_ERROR) error("[osmpexecutable.c] Test07 OSMP_Wait");
         }
     }
-    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Finalize");
+    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Finalize");
 
     return OSMP_SUCCESS;
 }
@@ -500,24 +500,24 @@ int test08(int argc, char** argv){
     OSMP_Request myrequest;
 
     if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test08 OSMP_Init");
-    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test08 OSMP_Size");
-    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test08 OSMP_Rank");
+    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test08 OSMP_Size");
+    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test08 OSMP_Rank");
 
 
     if(rank==0){ 
-        if (OSMP_CreateRequest(&myrequest)==OSMP_ERROR) error("[osmpexecutable2.c] Test08 OSMP_CreateRequest");
+        if (OSMP_CreateRequest(&myrequest)==OSMP_ERROR) error("[osmpexecutable.c] Test08 OSMP_CreateRequest");
         
         if(OSMP_Isend(bufin,OSMP_MAX_PAYLOAD_LENGTH,&osmp_char,6,myrequest)==OSMP_ERROR){
-            error("[osmpexecutable2.c] Test08 OSMP_Send");
+            error("[osmpexecutable.c] Test08 OSMP_Send");
             return OSMP_ERROR;
         }        
         OSMP_Test(myrequest, &flag);
         if(flag == 0){
-            if(OSMP_Wait(myrequest)==OSMP_ERROR) error("[osmpexecutable2.c] Test08 OSMP_Wait");
+            if(OSMP_Wait(myrequest)==OSMP_ERROR) error("[osmpexecutable.c] Test08 OSMP_Wait");
         }
         if(OSMP_RemoveRequest(&myrequest)==OSMP_ERROR) error("[osmpexecitable2.c] Test08 OSMP_RemoveRequest");
     }
-    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Finalize");
+    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable.c] OSMP_Finalize");
 
     return OSMP_SUCCESS;
 }
@@ -532,24 +532,24 @@ int test09(int argc, char **argv)
     double doublebufin[] = {1.9, 2.7, 3.8};
 
     if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test09 OSMP_Init");
-    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test09 OSMP_Size");
-    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test09 OSMP_Rank");
+    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test09 OSMP_Size");
+    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test09 OSMP_Rank");
 
-    //if (size != 2) error("[osmpexecutable2.c] Test12 Size!=2");
+    //if (size != 2) error("[osmpexecutable.c] Test12 Size!=2");
 
     if(rank==0){
-        if(OSMP_Send(doublebufin, 3,&osmp_double,1)==OSMP_ERROR) error("[osmpexecutable2.c] Test09 OSMP_Send");
+        if(OSMP_Send(doublebufin, 3,&osmp_double,1)==OSMP_ERROR) error("[osmpexecutable.c] Test09 OSMP_Send");
 
     }else{
-        if((bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH))==NULL)error("[osmpexecutable2.c] Calloc Fail");
+        if((bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH))==NULL)error("[osmpexecutable.c] Calloc Fail");
         if(OSMP_Recv(bufout,8,&osmp_double,&source,&len)==OSMP_ERROR){
-            error("[osmpexecutable2.c] Test09 OSMP_Recv");
+            error("[osmpexecutable.c] Test09 OSMP_Recv");
             return OSMP_ERROR;
         }
         printf("OSMP process %d received message: %d \n", rank, atoi(bufout));
 
     }
-    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] Test09 OSMP_Finalize");
+    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable.c] Test09 OSMP_Finalize");
 
     return OSMP_SUCCESS;
 }
@@ -560,20 +560,20 @@ int test10(int argc, char** argv) {
     int size, rank, source, len;
     int out = 0;
 
-    if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test05 OSMP_Init");
-    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test05 OSMP_Size");
-    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test05 OSMP_Rank");
+    if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test10 OSMP_Init");
+    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test10 OSMP_Size");
+    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test10 OSMP_Rank");
 
     if(rank==size-1) {
-        if(OSMP_Send(&rank, 1,&osmp_int,0)==OSMP_ERROR) error("[osmpexecutable2.c] Test05 OSMP_Send");
+        if(OSMP_Send(&rank, 1,&osmp_int,0)==OSMP_ERROR) error("[osmpexecutable.c] Test10 OSMP_Send");
     }else {
-        if(OSMP_Send(&rank, 1,&osmp_int,rank+1)==OSMP_ERROR) error("[osmpexecutable2.c] Test05 OSMP_Send");
+        if(OSMP_Send(&rank, 1,&osmp_int,rank+1)==OSMP_ERROR) error("[osmpexecutable.c] Test10 OSMP_Send");
     }
 
-    if(OSMP_Recv(&out,1,&osmp_int,&source,&len)==OSMP_ERROR) error("[osmpexecutable2.c] Test05 OSMP_Send");
+    if(OSMP_Recv(&out,1,&osmp_int,&source,&len)==OSMP_ERROR) error("[osmpexecutable.c] Test10 OSMP_Send");
     printf("OSMP process %d received message: %d \n", rank, out);
 
-    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Finalize");
+    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable.c] Test10 OSMP_Finalize");
 
     return OSMP_SUCCESS;
 }
@@ -588,28 +588,28 @@ int test11(int argc, char** argv) {
 
     OSMP_Request myrequest;
 
-    if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test05 OSMP_Init");
-    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test05 OSMP_Size");
-    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test05 OSMP_Rank");
+    if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test11 OSMP_Init");
+    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test11 OSMP_Size");
+    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test11 OSMP_Rank");
 
 
-    if (OSMP_CreateRequest(&myrequest)==OSMP_ERROR) error("[osmpexecutable2.c] Test08 OSMP_CreateRequest");
+    if (OSMP_CreateRequest(&myrequest)==OSMP_ERROR) error("[osmpexecutable.c] Test11 OSMP_CreateRequest");
 
     if(rank==size-1){
         if(OSMP_Isend(&rank,1,&osmp_int,0,myrequest)==OSMP_ERROR) {
-            error("[osmpexecutable2.c] Test08 OSMP_Send");
+            error("[osmpexecutable.c] Test11 OSMP_Send");
             return OSMP_ERROR;
         }
     }else{
         if(OSMP_Isend(&rank,1,&osmp_int,rank+1,myrequest)==OSMP_ERROR) {
-            error("[osmpexecutable2.c] Test08 OSMP_Send");
+            error("[osmpexecutable.c] Test11 OSMP_Send");
             return OSMP_ERROR;
         }
     }
 
-    if(OSMP_Test(myrequest, &flag) == OSMP_ERROR) error("[osmpexecutable2.c] Test08 OSMP_Test");
+    if(OSMP_Test(myrequest, &flag) == OSMP_ERROR) error("[osmpexecutable.c] Test11 OSMP_Test");
     if(flag == 0){
-        if(OSMP_Wait(myrequest)==OSMP_ERROR) error("[osmpexecutable2.c] Test08 OSMP_Wait");
+        if(OSMP_Wait(myrequest)==OSMP_ERROR) error("[osmpexecutable.c] Test11 OSMP_Wait");
     }
     if(OSMP_RemoveRequest(&myrequest)==OSMP_ERROR) error("[osmpexecitable2.c] Test08 OSMP_RemoveRequest");
 
@@ -622,7 +622,7 @@ int test11(int argc, char** argv) {
     printf("OSMP process %d received message: %d \n", rank, source);
     rv = OSMP_RemoveRequest( &myrequest );
 
-    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Finalize");
+    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable.c] Test11 OSMP_Finalize");
 
     return OSMP_SUCCESS;
 }
