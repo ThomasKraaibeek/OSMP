@@ -39,7 +39,7 @@ int OSMP_Init(int *argc, char ***argv){
     start = clock();
 
     shmname = (*argv)[2];
-    
+
     int fd = shm_open(shmname, O_CREAT | O_RDWR, 0640);
 
     if(fd==-1){
@@ -198,6 +198,8 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
 
     shm_start->msg[first].type = datatype;
 
+    debug("[OSMPLib.c] OSMP_Send Datatype mismatch: %d, %d",*((int*)(shm_start->msg[first].type)), *((int*)datatype));
+
     //printf("rank: %d\n", rank);
     shm_start->msg[first].src = rank;
     //printf("shmstartsrc: %d\n", shm_start->msg[first].src);
@@ -244,6 +246,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
  */
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *len){
 
+    //debug("[OSMPLib.c] OSMP_Recvoben Datatype mismatch: %d, %d",((int*)(shm_start->msg[shm_start->p[rank].firstmsg].type)), *((int*)datatype));
     if(shm_start==NULL){
         error("[OSMPLib.c] OSMP_Recv SHM not initialized");
         return OSMP_ERROR;
@@ -267,6 +270,13 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
     int first = shm_start->p[rank].firstmsg;
 
     shm_start->p[rank].firstmsg = shm_start->msg[first].nextmsg;
+
+    //int typenr = ((int*)(shm_start->msg[first].type));
+    //debug("[OSMPLib.c] OSMP_Recv Datatype mismatch: %d, %d",typenr, *((int*)datatype));
+    if(*((int*)shm_start->msg[first].type) != *((int*)datatype)){
+        //debug("[OSMPLib.c] OSMP_Recv Datatype mismatch: %d,%d",*((int*)shm_start->msg[first].type), *((int*)datatype));
+        return OSMP_ERROR;
+    }
 
     if(sem_post(&shm_start->p[rank].mutex)==-1) {
         error("[OSMPLib.c] OSMP_Recv sem_post Error");
@@ -437,6 +447,12 @@ int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *l
     }
     if(request==NULL){
         error("[OSMPLib.c] OSMP_IRecv request null");
+        return OSMP_ERROR;
+    }
+
+
+    if(shm_start->msg[shm_start->p[rank].firstmsg].type != datatype){
+        error("[OSMPLib.c] OSMP_Recv Datatype mismatch");
         return OSMP_ERROR;
     }
 

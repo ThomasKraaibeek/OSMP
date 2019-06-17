@@ -7,6 +7,7 @@
 
 int osmp_int = OSMP_INT;
 int osmp_char = OSMP_BYTE;
+int osmp_double = OSMP_DOUBLE;
 
 /**
  *
@@ -91,6 +92,13 @@ int test07(int argc, char** argv);
  */
 int test08(int argc, char** argv);
 
+/**
+ * Test 09: Es werden z.B. OSMP_BYTES versendet und OSMP_DOUBLE empfangen, was passiert und was ist mit der Länge?
+ * @param argc
+ * @param argv
+ * @return rv
+ */
+int test09(int argc, char** argv);
 
 /**
  * Ausführbare Datei, die von allen Prozessen geladen wird. Die Prozesse nutzen OSMPLib-Routinen um miteinander zu kommunizieren

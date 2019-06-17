@@ -26,6 +26,7 @@ int main(int argc, char** argv) {
     else if(testnr==9) rv = test06(argc,argv);
     else if(testnr==10) rv = test07(argc,argv);
     else if(testnr==11) rv = test08(argc,argv);
+    else if(testnr==12) rv = test09(argc,argv);
     else{
         error("Not a valid test no.");
     }
@@ -508,4 +509,36 @@ int test08(int argc, char** argv){
     if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] OSMP_Finalize");
 
     return OSMP_SUCCESS;
-} 
+}
+
+//Test-Nr 12
+int test09(int argc, char **argv)
+{
+    printf("Test-Nr 09..\n");
+
+    int size, rank, source, len;
+    char *bufout;
+    double doublebufin[] = {1.9, 2.7, 3.8};
+
+    if (OSMP_Init(&argc, &argv) == OSMP_ERROR) error("[OSMPExecutable.c] Test09 OSMP_Init");
+    if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable2.c] Test09 OSMP_Size");
+    if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable2.c] Test09 OSMP_Rank");
+
+    //if (size != 2) error("[osmpexecutable2.c] Test12 Size!=2");
+
+    if(rank==0){
+        if(OSMP_Send(doublebufin, 3,&osmp_double,1)==OSMP_ERROR) error("[osmpexecutable2.c] Test09 OSMP_Send");
+
+    }else{
+        if((bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH))==NULL)error("[osmpexecutable2.c] Calloc Fail");
+        if(OSMP_Recv(bufout,8,&osmp_double,&source,&len)==OSMP_ERROR){
+            error("[osmpexecutable2.c] Test09 OSMP_Recv");
+            return OSMP_ERROR;
+        }
+        printf("OSMP process %d received message: %d \n", rank, atoi(bufout));
+
+    }
+    if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable2.c] Test09 OSMP_Finalize");
+
+    return OSMP_SUCCESS;
+}
