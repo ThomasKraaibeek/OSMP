@@ -114,7 +114,7 @@ int OSMP_Size(int *size){
     *size = shm_start->processAmount;
     //printf("ProcessAmount: %d",shm_start->processAmount);
 
-    debug("[OSMPLib.c] OSMP_Send - End");
+    debug("[OSMPLib.c] OSMP_Size - End");
     return OSMP_SUCCESS;
 
 }

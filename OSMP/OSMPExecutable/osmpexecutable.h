@@ -100,6 +100,10 @@ int test08(int argc, char** argv);
  */
 int test09(int argc, char** argv);
 
+int test10(int argc, char** argv);
+
+int test11(int argc, char** argv);
+
 /**
  * Ausführbare Datei, die von allen Prozessen geladen wird. Die Prozesse nutzen OSMPLib-Routinen um miteinander zu kommunizieren
  * @param argc Name dieser Datei
