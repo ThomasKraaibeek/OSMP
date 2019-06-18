@@ -99,11 +99,15 @@ int Send_Irecv(int argc, char *argv[])
     char *bufin, *bufout;
     OSMP_Request myrequest;
 
-    rv = OSMP_Init( &argc, &argv );
-    rv = OSMP_Size( &size );
-    rv = OSMP_Rank( &rank );
+    if(OSMP_Init( &argc, &argv ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Init");
+    if(OSMP_Size( &size ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Size");
+    if(OSMP_Rank( &rank ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Rank");
 
-    if( size != 2 ) { /* Fehlerbehandlung */ }
+    if(size != 2){
+        error("Invalid number of processes. 2 processes required.");
+        return OSMP_ERROR;
+    }
+
     if( rank == 0 )
     { // OSMP process 0
         bufin = malloc(1*strlen("hello world")); // check for != NULL
@@ -143,11 +147,15 @@ int Isend_Irecv(int argc, char *argv[])
     char *bufin, *bufout;
     OSMP_Request myrequest;
 
-    rv = OSMP_Init( &argc, &argv );
-    rv = OSMP_Size( &size );
-    rv = OSMP_Rank( &rank );
+    if(OSMP_Init( &argc, &argv ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Init");
+    if(OSMP_Size( &size ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Size");
+    if(OSMP_Rank( &rank ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Rank");
 
-    if( size != 2 ) { /* Fehlerbehandlung */ }
+    if(size != 2){
+        error("Invalid number of processes. 2 processes required.");
+        return OSMP_ERROR;
+    }
+
     if( rank == 0 )
     { // OSMP process 0
         bufin = malloc(1*strlen("hello world")); // check for != NULL
@@ -193,11 +201,15 @@ int Isend_Recv(int argc, char *argv[])
     char *bufin, *bufout;
     OSMP_Request myrequest;
 
-    rv = OSMP_Init( &argc, &argv );
-    rv = OSMP_Size( &size );
-    rv = OSMP_Rank( &rank );
+    if(OSMP_Init( &argc, &argv ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Init");
+    if(OSMP_Size( &size ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Size");
+    if(OSMP_Rank( &rank ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Rank");
 
-    if( size != 2 ) { /* Fehlerbehandlung */ }
+    if(size != 2){
+        error("Invalid number of processes. 2 processes required.");
+        return OSMP_ERROR;
+    }
+
     if( rank == 0 )
     { // OSMP process 0
         bufin = malloc(1*strlen("hello world")); // check for != NULL
@@ -295,7 +307,12 @@ int test02(int argc,char** argv){
     }
     rv = OSMP_Size( &size );
     rv = OSMP_Rank( &rank );
-    if( size != 2 ) error("[osmpexecutable.c] size!=2 ERROR");
+
+    if(size != 2){
+        error("Invalid number of processes. 2 processes required.");
+        return OSMP_ERROR;
+    }
+
     if( rank == 0 )
     { // OSMP process 0
 
@@ -334,7 +351,10 @@ int test03(int argc, char** argv) {
     if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test03 OSMP_Size");
     if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test03 OSMP_Rank");
 
-    if (size != 2) error("[osmpexecutable.c] Test03 Size!=2");
+    if(size != 2){
+        error("Invalid number of processes. 2 processes required.");
+        return OSMP_ERROR;
+    }
 
     if(rank==0){
         for(int i = 0;i<18;i++){
@@ -365,7 +385,10 @@ int test04(int argc, char** argv) {
     if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test04 OSMP_Size");
     if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test04 OSMP_Rank");
 
-    //if (size != 2) error("[osmpexecutable.c] Test03 Size!=2");
+    if(size != 2){
+        error("Invalid number of processes. 2 processes required.");
+        return OSMP_ERROR;
+    }
 
     if(rank==0){
         //if(OSMP_Send(bufin, OSMP_MAX_PAYLOAD_LENGTH,&osmp_char,1)==OSMP_ERROR) error("[osmpexecutable.c] Test03 OSMP_Send");
@@ -397,7 +420,10 @@ int test05(int argc, char** argv) {
     if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test05 OSMP_Size");
     if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test05 OSMP_Rank");
 
-    //if (size != 2) error("[osmpexecutable.c] Test05 Size!=2");
+    if(size != 2){
+        error("Invalid number of processes. 2 processes required.");
+        return OSMP_ERROR;
+    }
 
     if(rank==0){
         for(int i = 0;i<OSMP_MAX_MESSAGES_PROC+2;i++){
@@ -535,7 +561,10 @@ int test09(int argc, char **argv)
     if (OSMP_Size(&size) == OSMP_ERROR) error("[osmpexecutable.c] Test09 OSMP_Size");
     if (OSMP_Rank(&rank) == OSMP_ERROR) error("[osmpexecutable.c] Test09 OSMP_Rank");
 
-    //if (size != 2) error("[osmpexecutable.c] Test12 Size!=2");
+    if(size != 2){
+        error("Invalid number of processes. 2 processes required.");
+        return OSMP_ERROR;
+    }
 
     if(rank==0){
         if(OSMP_Send(doublebufin, 3,&osmp_double,1)==OSMP_ERROR) error("[osmpexecutable.c] Test09 OSMP_Send");
@@ -584,7 +613,6 @@ int test11(int argc, char** argv) {
     int size, rank, source, len;
     int out = 0;
     int flag = 0;
-    int rv = OSMP_ERROR;
 
     OSMP_Request myrequest;
 
@@ -611,16 +639,16 @@ int test11(int argc, char** argv) {
     if(flag == 0){
         if(OSMP_Wait(myrequest)==OSMP_ERROR) error("[osmpexecutable.c] Test11 OSMP_Wait");
     }
-    if(OSMP_RemoveRequest(&myrequest)==OSMP_ERROR) error("[osmpexecitable2.c] Test08 OSMP_RemoveRequest");
+    if(OSMP_RemoveRequest(&myrequest)==OSMP_ERROR) error("[osmpexecitable.c] Test11 OSMP_RemoveRequest");
 
 
-    rv = OSMP_CreateRequest( &myrequest );
-    rv = OSMP_Irecv(&out, 1, &osmp_int, &source, &len, myrequest);
+    if(OSMP_CreateRequest(&myrequest)==OSMP_ERROR) error("[osmpexecutable.c] Test11 OSMP_CreateRequest");
+    if(OSMP_Irecv(&out, 1, &osmp_int, &source, &len, myrequest) == OSMP_ERROR) error("[osmpexecutable.c] Test11 OSMP_Irecv");
 
-    rv = OSMP_Wait( myrequest );
+    if(OSMP_Wait( myrequest )==OSMP_ERROR) error("[osmpexecutable.c] Test11 OSMP_Wait");
 
     printf("OSMP process %d received message: %d \n", rank, source);
-    rv = OSMP_RemoveRequest( &myrequest );
+    if(OSMP_RemoveRequest(&myrequest)==OSMP_ERROR) error("[osmpexecitable.c] Test11 OSMP_RemoveRequest");
 
     if(OSMP_Finalize()==OSMP_ERROR) error("[osmpexecutable.c] Test11 OSMP_Finalize");
 
