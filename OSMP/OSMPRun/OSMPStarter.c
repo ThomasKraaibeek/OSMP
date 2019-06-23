@@ -48,7 +48,7 @@ int slots_init(unsigned int processAmount) {
 
     for (int i = 0; i < OSMP_MAX_SLOTS; i++) {
         shm_start->msg[i].src = -1;
-        shm_start->msg[i].len = 0; // besser 0 als -1? sonst inkompatibel mit dem Typ size_t
+        shm_start->msg[i].len = 0; // besser 0 als -1. sonst inkompatibel mit dem Typ size_t
         memcpy(shm_start->msg[i].data, "\0", 1);
         //shm_start->msg[i].type = OSMP_INT;
 
@@ -79,10 +79,14 @@ int main(int argc, char **argv) {
     //Sonst warnung wegen Vorzeichen
     unsigned int processAmount = (unsigned int) inputprocessAmount;
 
-    pid_t pid;
-    char* shmname = calloc(1,strlen("myshm")+sizeof(pid_t));
-    sprintf(shmname,"myshm_%d",getpid());
-    argv[4] = shmname;
+    //shmname mit PID verbinden um mehrere Starter mit eigenen Kindern gleichzeitig in verschiedneen SHM's arbeiten zu lassen
+    pid_t pid = getpid();
+    char* itospid = itos(pid);
+    char* shmname = calloc(1,strlen("myshm_")+strlen(itospid)+1);
+    snprintf(shmname,strlen("myshm_")+strlen(itospid)+1,"myshm_%s",itospid);
+    //printf("Sizeof: %d, strlen: %d, calloc: %d, pid: %d, shmname> %s",sizeof(shmname),strlen(shmname),strlen("myshm_")+sizeof(pid_t),strlen(itospid), shmname);
+    free(itospid);
+
     //Erzeuge shared memory. 2. Argument: Zugriffsrechte der Prozesse, 3. Argument: Zugriffsrechte der Benutzer
     int fd = shm_open(shmname, O_CREAT | O_RDWR, 0640);
     if (fd == -1) {
@@ -101,7 +105,7 @@ int main(int argc, char **argv) {
     //printf("selbst ausgerechnet: %d\n", (unsigned int)(sizeof(emptyslot) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process)));
 
     //Mappe den erzeugten shared memory in den Prozessspeicher
-    shm_start = mmap(0, (unsigned int) (sizeof(process) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process)), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); //TODO Rechte?
+    shm_start = mmap(0, (unsigned int) (sizeof(process) + OSMP_MAX_SLOTS * sizeof(message) + processAmount * sizeof(process)), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     //Fehlerbehandlung für das Mapping
     if (shm_start == MAP_FAILED) {
         error("[OSMPStarter.c] Fehler beim Mapping");
@@ -123,39 +127,34 @@ int main(int argc, char **argv) {
         //Child
         if (pid == 0) {
             shm_start->p[i].pid = getpid();
-            //printf("ss%s\n",*argv[1]);
-            fflush(stdout);
+
             //Name der auszuführenden Datei und alle Argumente
-            execlp(argv[2], argv[2], argv[3],argv[4], NULL);
+            execlp(argv[2], argv[2], argv[3], NULL);
             //execlp(argv[2], *argv);
             debug("Fehler bei execlp");
 
-            //Parent braucht durch das Sleep einige Zeit um was in den Speicher zu schreiben. Hier wird direkt ausgelesen. Speicher muss leer sein.
-            //strncmp(map, "", strlen(map)) == 0 ? printf("p(%d): Speicher leer!\n", i) : printf("p(%d): %s\n", i, (char *) map);
             return OSMP_ERROR;
         }
-
-            //Parent
+        //Parent
         else if (pid > 0) {
-
             if (i + 1 < processAmount) {
                 continue;
             }
-
-            //memcpy(shm_start->msg->data, "s", 1);
-            //sprintf(shm_start, "%s", "Hallo Welt");
         }
     }
 
     //Warte auf alle einzelnen Kinder. -1 = Warte nicht hintereinander sondern parallel
     for (int i = 0; i < processAmount; i++) {
-
         waitpid(-1, NULL, 0);
         //shm_start->processAmount--;
     }
 
-    //shm_unlink(SHMNAME);
-    //free(shm_start);
-
+    free(shmname);
     return 0;
+}
+
+char *itos(int value) {
+    char *string = malloc(12);
+    sprintf(string, "%d", value);
+    return string;
 }

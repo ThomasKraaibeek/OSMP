@@ -57,8 +57,6 @@ int Send_Recv(int argc, char *argv[])
 
     int rv, size, rank, source;
     int bufin[2], bufout[2], len;
-    sem_t mutex;
-    if(sem_init(&mutex,1,1)==-1) error("[osmpexecutable.c] sem_init");
     
     if(OSMP_Init( &argc, &argv ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Init");
     if(OSMP_Size( &size ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Size");
@@ -74,14 +72,10 @@ int Send_Recv(int argc, char *argv[])
         bufin[0] = 4711;
         bufin[1] = 4712;
         if(OSMP_Send( bufin, 2, &osmp_int, 1 ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Send");
-        //rv = sem_post(&mutex);
-        rv=sem_wait(&mutex);
     }
     else
     { // OSMP process 1
-        //rv=sem_wait(&mutex);
         rv = OSMP_Recv( bufout, 2, &osmp_int, &source, &len );
-        rv=sem_post(&mutex);
         printf("OSMP process %d received %d byte from %d [%d:%d] \n",rank, len, source, bufout[0], bufout[1]);
     }
     rv = OSMP_Finalize();
@@ -245,8 +239,6 @@ int Isend_Recv(int argc, char *argv[])
 //Test-Nr 4
 int test01(int argc, char** argv){
 
-    printf("Test01..\n");
-
     int rv = OSMP_SUCCESS, size = 0, rank = 0, source, len;
     char* bufin="Test Message";
     char* bufout;
@@ -296,7 +288,6 @@ int test01(int argc, char** argv){
 //Test-Nr 5
 int test02(int argc,char** argv){
 
-    printf("Test02\n");
 
     int rv, size, rank, source, len;
     char *bufout;
