@@ -7,6 +7,19 @@
 #include <stdarg.h>
 #include <time.h>
 
+/**
+ * Aufbau der Request-Struktur. Für Nutzer opaque, deswegen nicht in .h
+ */
+typedef struct {
+    char* buffer;
+    int* length;
+    int* source;
+    OSMP_Datatype type;
+    int dest;
+    int count;
+    sem_t mutex;
+} IRequest;
+
 //SHM Struct
 shm* shm_start;
 sem_t mutex;

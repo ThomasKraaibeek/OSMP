@@ -19,9 +19,6 @@
 #ifndef OSMP_OSMPLIB_H
 #define OSMP_OSMPLIB_H
 
-#define SHMNAME "/myshm"
-
-
 #define OSMP_SUCCESS 0
 #define OSMP_ERROR -1
 
@@ -29,20 +26,6 @@
 
 typedef void* OSMP_Datatype;
 typedef void* OSMP_Request;
-
-/**
- * Aufbau der Request-Struktur
- */
-typedef struct {
-    char* buffer;
-    int* length;
-    int* source;
-    OSMP_Datatype type;
-    int dest;
-    int count;
-    sem_t mutex;
-} IRequest;
-
 
 #define OSMP_MAX_MESSAGES_PROC   16   // maximale Zahl der Nachrichten pro Prozess
 #define OSMP_MAX_SLOTS           256  // maximale Anzahl der Nachrichten, die insgesamt vorhanden sein dürfen
