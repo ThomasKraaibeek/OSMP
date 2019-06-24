@@ -42,11 +42,5 @@
  */
 int main(int argc, char **argv);
 
-/**
- * Konvertiert Integer zu String
- * @param value zu konvertierende Zahl
- * @return konvertierte Zahl
- */
-char* itos(int value);
 
 #endif //OSMP_OSMPSTARTER_H

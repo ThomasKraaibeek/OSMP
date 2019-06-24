@@ -11,7 +11,6 @@
 
 
 int main(int argc, char** argv) {
-
     int rv = OSMP_ERROR;
 
     for(int i = 0; i<strlen(argv[1]); i++){
@@ -22,7 +21,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    int testnr = atoi(argv[1]);
+    int testnr = atoi(argv[3]);
 
     if(testnr==0) rv = Send_Recv(argc,argv);
     else if(testnr==1) rv = Send_Irecv(argc,argv);

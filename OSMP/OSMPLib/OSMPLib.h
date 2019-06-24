@@ -227,5 +227,12 @@ int error(char* msg, ...);
  */
 void debug(char* message, ...);
 
+/**
+ * Konvertiert Integer zu String
+ * @param value zu konvertierende Zahl
+ * @return konvertierte Zahl
+ */
+char* itos(int value);
+
 
 #endif //OSMP_OSMPLIB_H

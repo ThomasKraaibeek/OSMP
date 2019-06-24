@@ -129,7 +129,8 @@ int main(int argc, char **argv) {
             shm_start->p[i].pid = getpid();
 
             //Name der auszuführenden Datei und alle Argumente
-            execlp(argv[2], argv[2], argv[3], NULL);
+            //execlp(argv[2], argv[2], argv[3], NULL);
+            execvp(argv[2],argv);
             //execlp(argv[2], *argv);
             debug("Fehler bei execlp");
 
@@ -153,8 +154,3 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-char *itos(int value) {
-    char *string = malloc(12);
-    sprintf(string, "%d", value);
-    return string;
-}

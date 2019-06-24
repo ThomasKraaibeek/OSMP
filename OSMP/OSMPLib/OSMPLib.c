@@ -37,8 +37,11 @@ int OSMP_Init(int *argc, char ***argv){
     debug("[OSMPLib.c] OSMP_Init - Start");
     start = clock();
 
-    shmname = calloc(1,strlen("myshm_")+sizeof(pid_t));
-    sprintf(shmname,"myshm_%d",getppid());
+    pid_t ppid = getppid();
+    char* itospid = itos(ppid);
+    shmname = calloc(1,strlen("myshm_")+strlen(itospid)+1);
+    if(sprintf(shmname,"myshm_%s",itospid)<0) error("[OSMPLib.c] OSMP_Init sprintf shm_name");
+    printf("ppid: %d, name: %s\n",ppid,shmname);
 
     int fd = shm_open(shmname, O_CREAT | O_RDWR, 0640);
 
@@ -562,4 +565,10 @@ int OSMP_RemoveRequest(OSMP_Request *request){
     //free(*request); //@TODO *request?
     debug("[OSMPLib.c] OSMP_RemoveRequest - End");
     return OSMP_SUCCESS;
+}
+
+char* itos(int value) {
+    char *string = malloc(12);
+    sprintf(string, "%d", value);
+    return string;
 }
