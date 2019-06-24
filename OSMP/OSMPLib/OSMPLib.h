@@ -49,17 +49,6 @@ typedef struct {
 #define OSMP_MAX_PAYLOAD_LENGTH  1024 // maximale Länge der Nutzlast einer Nachricht
 
 enum  {OSMP_INT, OSMP_SHORT, OSMP_LONG, OSMP_BYTE, OSMP_UNSIGNED_CHAR, OSMP_UNSIGNED_SHORT, OSMP_UNSIGNED, OSMP_FLOAT, OSMP_DOUBLE };
-/*
-#define OSMP_INT 0
-#define OSMP_SHORT 1
-#define OSMP_LONG 2
-#define OSMP_UNSIGNED_CHAR 3
-#define OSMP_UNSIGNED_SHORT 4
-#define OSMP_UNSIGNED 5
-#define OSMP_FLOAT 6
-#define OSMP_DOUBLE 7
-#define OSMP_BYTE 8
-#define OSMP_CHAR 9*/
 
 typedef struct{
     int src;

@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
             //execlp(argv[2], argv[2], argv[3], NULL);
             execvp(argv[2],argv);
             //execlp(argv[2], *argv);
-            debug("Fehler bei execlp");
+            debug("Fehler bei execvp");
 
             return OSMP_ERROR;
         }
@@ -149,6 +149,14 @@ int main(int argc, char **argv) {
         waitpid(-1, NULL, 0);
         //shm_start->processAmount--;
     }
+
+
+    if(shm_unlink(shmname) == OSMP_ERROR){
+        error("[OSMPLib.c] Unlinking SHM failed");
+        return OSMP_ERROR;
+    }
+    shm_start=NULL;
+    debug("[OSMPStarter.c] Unlinking SHM successful");
 
     free(shmname);
     return 0;

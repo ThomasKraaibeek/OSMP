@@ -40,10 +40,19 @@ int OSMP_Init(int *argc, char ***argv){
     pid_t ppid = getppid();
     char* itospid = itos(ppid);
     shmname = calloc(1,strlen("myshm_")+strlen(itospid)+1);
-    if(sprintf(shmname,"myshm_%s",itospid)<0) error("[OSMPLib.c] OSMP_Init sprintf shm_name");
+    if(sprintf(shmname,"myshm_%s",itospid)<0) {
+        error("[OSMPLib.c] OSMP_Init sprintf shm_name");
+        free(itospid);
+        free(shmname);
+        return OSMP_ERROR;
+    }
     printf("ppid: %d, name: %s\n",ppid,shmname);
 
+    free(itospid);
+
     int fd = shm_open(shmname, O_CREAT | O_RDWR, 0640);
+
+    free(shmname);
 
     if(fd==-1){
         error("[OSMPLib.c] OSMP_Init Fehler bei shm_open");
@@ -328,7 +337,7 @@ int OSMP_Finalize(void){
     }
     //printf("rechnung: %d", sizeof(process) + OSMP_MAX_SLOTS * sizeof(message) + processes * sizeof(process));
 
-    if(i==processes){
+    /*if(i==processes){
         debug("[OSMPLib.c] OSMP_Finalize Unlinking SHM with process of Rank: %d\n",rank);
         rv=shm_unlink(shmname);
         if(rv==OSMP_ERROR){
@@ -336,7 +345,7 @@ int OSMP_Finalize(void){
             return OSMP_ERROR;
         }
         shm_start=NULL;
-    }
+    */
 
     debug("[OSMPLib.c] OSMP_Finalize - End");
     return rv;
