@@ -82,8 +82,19 @@ int main(int argc, char **argv) {
     //shmname mit PID verbinden um mehrere Starter mit eigenen Kindern gleichzeitig in verschiedneen SHM's arbeiten zu lassen
     pid_t pid = getpid();
     char* itospid = itos(pid);
-    char* shmname = calloc(1,strlen("myshm_")+strlen(itospid)+1);
-    snprintf(shmname,strlen("myshm_")+strlen(itospid)+1,"myshm_%s",itospid);
+
+    if(itospid == NULL){
+        error("[OSMPStarter.c] itos failed");
+        return OSMP_ERROR;
+    }
+
+    char* shmname = calloc(1, strlen("myshm_") + strlen(itospid) + 1);
+    if(snprintf(shmname, strlen("myshm_") + strlen(itospid) + 1, "myshm_%s", itospid) < 0){
+        error("[OSMPStarter.c] snprintf shm_name");
+        free(itospid);
+        free(shmname);
+        return OSMP_ERROR;
+    }
     //printf("Sizeof: %d, strlen: %d, calloc: %d, pid: %d, shmname> %s",sizeof(shmname),strlen(shmname),strlen("myshm_")+sizeof(pid_t),strlen(itospid), shmname);
     free(itospid);
 
@@ -91,6 +102,7 @@ int main(int argc, char **argv) {
     int fd = shm_open(shmname, O_CREAT | O_RDWR, 0640);
     if (fd == -1) {
         error("[OSMPStarter.c] Fehler bei shm_open");
+        free(shmname);
         return OSMP_ERROR;
     }
 
@@ -99,6 +111,7 @@ int main(int argc, char **argv) {
     //Fehlerbehandlung, falls ftruncate nicht funktioniert hat
     if (ftrunc == -1) {
         error("[OSMPStarter.c] Fehler bei ftruncate");
+        free(shmname);
         return OSMP_ERROR;
     }
 
@@ -109,10 +122,16 @@ int main(int argc, char **argv) {
     //Fehlerbehandlung für das Mapping
     if (shm_start == MAP_FAILED) {
         error("[OSMPStarter.c] Fehler beim Mapping");
+        free(shmname);
         return OSMP_ERROR;
     }
 
-    slots_init(processAmount);
+    if(slots_init(processAmount) == OSMP_ERROR){
+        error("[OSMPStarter.c] Fehler beim slots_init");
+        free(shmname);
+        return OSMP_ERROR;
+    }
+
     //Forke "processAmount" mal
     for (int i = 0; i < processAmount; i++) {
         shm_start->processAmount++;
@@ -121,6 +140,7 @@ int main(int argc, char **argv) {
         //Fehlerbehandlung
         if (pid < 0) {
             error("Fehler bei der Prozessaufteilung");
+            free(shmname);
             return OSMP_ERROR;
         }
 
@@ -132,6 +152,7 @@ int main(int argc, char **argv) {
             //execlp(argv[2], argv[2], argv[3], NULL);
             execvp(argv[2],argv);
             //execlp(argv[2], *argv);
+            free(shmname);
             debug("Fehler bei execvp");
 
             return OSMP_ERROR;
@@ -153,9 +174,10 @@ int main(int argc, char **argv) {
 
     if(shm_unlink(shmname) == OSMP_ERROR){
         error("[OSMPLib.c] Unlinking SHM failed");
+        free(shmname);
         return OSMP_ERROR;
     }
-    shm_start=NULL;
+    shm_start = NULL;
     debug("[OSMPStarter.c] Unlinking SHM successful");
 
     free(shmname);

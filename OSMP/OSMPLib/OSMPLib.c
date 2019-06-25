@@ -41,7 +41,7 @@ void debug(char* message, ...) {
 }
 
 void error(char* msg, ...){
-    debug("ERROR: %s",msg);
+    debug("ERROR: %s", msg);
 }
 
 int OSMP_Init(int *argc, char ***argv){
@@ -49,7 +49,13 @@ int OSMP_Init(int *argc, char ***argv){
 
     pid_t ppid = getppid();
     char* itospid = itos(ppid);
-    shmname = calloc(1,strlen("myshm_") + strlen(itospid) + 1);
+
+    if(itospid == NULL){
+        error("[OSMPLib.c] OSMP_Init itos failed");
+        return OSMP_ERROR;
+    }
+
+    shmname = calloc(1, strlen("myshm_") + strlen(itospid) + 1);
 
     if(shmname == NULL){
         error("[OSMPLib.c] OSMP_Init calloc shm_name");
@@ -84,6 +90,7 @@ int OSMP_Init(int *argc, char ***argv){
 
     if(fstat(fd, shm_stat) != 0){
         error("[OSMPLib.c] OSMP_Init fstat fail");
+        free(shm_stat);
         return OSMP_ERROR;
     }
 
@@ -394,20 +401,20 @@ int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSM
 
     debug("[OSMPLib.c] OSMP_iSend - Start");
 
-    if(shm_start==NULL){
+    if(shm_start == NULL){
         error("[OSMPLib.c] OSMP_iSend SHM not initialized");
     }
 
-    if(buf==NULL){
+    if(buf == NULL){
         error("[OSMPLib.c] OSMP_iSend buf null");
         return OSMP_ERROR;
     }
-    if(request==NULL){
+    if(request == NULL){
         error("[OSMPLib.c] OSMP_iSend request null");
         return OSMP_ERROR;
     }
 
-    if(dest>=processes){
+    if(dest >= processes){
         debug("[OSMPLib.c] OSMP_Send Destination unreachable. %d not a valid OSMP_Process no.",dest);
         return OSMP_ERROR;
     }
@@ -445,16 +452,16 @@ int OSMP_Irecv(void *buf, int count, OSMP_Datatype datatype, int *source, int *l
 
     debug("[OSMPLib.c] OSMP_iRecv - Start");
 
-    if(shm_start==NULL){
+    if(shm_start == NULL){
         error("[OSMPLib.c] OSMP_IRecv SHM not initialized");
         return OSMP_ERROR;
     }
 
-    if(buf==NULL){
+    if(buf == NULL){
         error("[OSMPLib.c] OSMP_IRecv buf null");
         return OSMP_ERROR;
     }
-    if(request==NULL){
+    if(request == NULL){
         error("[OSMPLib.c] OSMP_IRecv request null");
         return OSMP_ERROR;
     }
@@ -597,6 +604,7 @@ int OSMP_RemoveRequest(OSMP_Request *request){
         return OSMP_ERROR;
     }
 
+    //free(req);
     debug("[OSMPLib.c] OSMP_RemoveRequest - End");
     return OSMP_SUCCESS;
 }
@@ -604,6 +612,15 @@ int OSMP_RemoveRequest(OSMP_Request *request){
 char* itos(int value) {
     char *string = malloc(12);
 
-    sprintf(string, "%d", value);
+    if(string == NULL){
+        error("[OSMPLib.c] itos malloc failed");
+        return NULL;
+    }
+
+    if(sprintf(string, "%d", value) < 0){
+        free(string);
+        error("[OSMPLib.c] itos sprintf");
+        return NULL;
+    }
     return string;
 }

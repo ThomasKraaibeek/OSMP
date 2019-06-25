@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
     int rv = OSMP_ERROR;
 
     for(int i = 0; i<strlen(argv[1]); i++){
-        printf("argv:%s\n", (argv[1])+i);
+        //printf("argv:%s\n", (argv[1])+i);
         if(*((argv[1])+i) < 48 || *((argv[1])+i) > 57){//Ascii für Zahlen zwischen 0 und 9
             error("Not a valid test no. Choose between 0 and 12.");
             return rv;
@@ -22,7 +22,6 @@ int main(int argc, char** argv) {
     }
 
     int testnr = atoi(argv[3]);
-    //int testnr = atoi(argv[1]);
 
     if(testnr==0) rv = Send_Recv(argc,argv);
     else if(testnr==1) rv = Send_Irecv(argc,argv);
@@ -197,23 +196,27 @@ int Isend_Irecv(int argc, char *argv[])
     }
 
     if( rank == 0 ){ // OSMP process 0
-        bufin = malloc(1*strlen("hello world")); // check for != NULL
-        if(bufin==NULL) {
+        bufin = malloc(strlen("hello world") + 1); // check for != NULL
+        if(bufin == NULL) {
             error("[osmpexecutable.c] Test 2 Malloc");
+            return OSMP_ERROR;
         }
-        strncpy(bufin, "hello world",strlen("hello world")+1);
+        strncpy(bufin, "hello world", strlen("hello world") + 1);
 
-        if(OSMP_CreateRequest( &myrequest )==OSMP_ERROR){
+        if(OSMP_CreateRequest( &myrequest ) == OSMP_ERROR){
             error("[osmpexecutable.c] Test 2 OSMP_CreateRequest");
+            free(bufin);
             return OSMP_ERROR;
         }
         if(OSMP_Isend( bufin, strlen("hello world"), &osmp_char, 1, myrequest )){
             error("[osmpexecutable.c] Test 2 OSMP_ISend");
+            free(bufin);
             return OSMP_ERROR;
         }
 
         if(OSMP_Test(myrequest, &flag)==OSMP_ERROR){
             error("[osmpexecutable.c] Test 2 OSMP_Test");
+            free(bufin);
             return OSMP_ERROR;
         }
         //printf("flag: %d\n", flag);
@@ -291,57 +294,70 @@ int Isend_Recv(int argc, char *argv[])
 
     if( rank == 0 )
     { // OSMP process 0
-        bufin = malloc(1*strlen("hello world")); // check for != NULL
-        if(bufin==NULL) {
+        bufin = malloc(strlen("hello world") + 1); // check for != NULL
+        if(bufin == NULL) {
             error("[osmpexecutable.c] Test 3 malloc");
             return OSMP_ERROR;
         }
-        strncpy(bufin, "hello world",strlen("hello world")+1);
+        strncpy(bufin, "hello world", strlen("hello world") + 1);
 
-        if(OSMP_CreateRequest( &myrequest )==OSMP_ERROR){
+        if(OSMP_CreateRequest( &myrequest ) == OSMP_ERROR){
             error("[osmpexecutable.c] Test 3 OSMP_CreateRequest");
+            free(bufin);
             return OSMP_ERROR;
         }
-        if(OSMP_Isend( bufin, strlen("hello world"), &osmp_char, 1, myrequest )==OSMP_ERROR){
+        if(OSMP_Isend( bufin, strlen("hello world") + 1, &osmp_char, 1, myrequest ) == OSMP_ERROR){
             error("[osmpexecutable.c] Test 3 OSMP_ISend");
+            free(myrequest);
+            free(bufin);
             return OSMP_ERROR;
         }
 
-        if(OSMP_Test(myrequest, &flag)==OSMP_ERROR){
+        if(OSMP_Test(myrequest, &flag) == OSMP_ERROR){
             error("[osmpexecutable.c] Test 3 OSMP_Test");
+            free(myrequest);
+            free(bufin);
             return OSMP_ERROR;
-        };
+        }
         //printf("flag: %d\n", flag);
         if(flag == 0){
-            if(OSMP_Wait(myrequest)==OSMP_ERROR){
+            if(OSMP_Wait(myrequest) == OSMP_ERROR){
                 error("[osmpexecutable.c] Test 3 OSMP_Wait");
+                free(myrequest);
+                free(bufin);
                 return OSMP_ERROR;
             }
         }
-        if(OSMP_RemoveRequest( &myrequest )==OSMP_ERROR){
+        if(OSMP_RemoveRequest( &myrequest ) == OSMP_ERROR){
             error("[osmpexecutable.c] Test 3 OSMP_RemoveRequest");
+            free(myrequest);
+            free(bufin);
             return OSMP_ERROR;
         }
+        //free(myrequest);
+        free(bufin);
     }
     else
     { // OSMP process 1
-        bufout = malloc(1*strlen("hello world")); // check for != NULL
-        if(bufout==NULL){
+        bufout = malloc(strlen("hello world") + 1); // check for != NULL
+        if(bufout == NULL){
             error("[osmpexecutable.c] Test 3 malloc");
             return OSMP_ERROR;
         }
-        if(OSMP_Recv( bufout, strlen("hello world"), &osmp_char, &source, &len)==OSMP_ERROR){
+        if(OSMP_Recv( bufout, strlen("hello world") + 1, &osmp_char, &source, &len)==OSMP_ERROR){
             error("[osmpexecutable.c] Test 3 OSMP_Recv");
+            free(bufout);
             return OSMP_ERROR;
         }
 
         printf("OSMP process %d received message from %d: %s \n", rank, source, bufout);
-
+        free(bufout);
     }
-    if(OSMP_Finalize()==OSMP_ERROR){
+
+    if(OSMP_Finalize() == OSMP_ERROR){
         error("[osmpexecutable.c] Test 3 OSMP_Finalize");
         return OSMP_ERROR;
-    };
+    }
     return OSMP_SUCCESS;
 }
 //Test-Nr 4
