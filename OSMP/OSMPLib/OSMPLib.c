@@ -592,9 +592,10 @@ int OSMP_RemoveRequest(OSMP_Request *request){
 
     if(sem_getvalue(&req->mutex, &flag)) {
         error("[OSMPLib.c] OSMP_RemoveRequest in sem_getvalue");
+        return OSMP_ERROR;
     }
 
-    if(flag!=0){
+    if(flag==0){
         debug("[OSMPLib.c] OSMP_RemoveRequest req still in use. Returning..");
         return OSMP_ERROR;
     }
@@ -604,7 +605,8 @@ int OSMP_RemoveRequest(OSMP_Request *request){
         return OSMP_ERROR;
     }
 
-    //free(req);
+    free(req);
+    //free(request);
     debug("[OSMPLib.c] OSMP_RemoveRequest - End");
     return OSMP_SUCCESS;
 }
