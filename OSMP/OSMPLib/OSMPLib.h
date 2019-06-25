@@ -190,7 +190,7 @@ int OSMP_RemoveRequest(OSMP_Request *request);
  * @param ...
  * @return Statuscode OSMP_ERROR
  */
-int error(char* msg, ...);
+void error(char* msg, ...);
 
 /**
  * Dient zum Ausgeben einer Message

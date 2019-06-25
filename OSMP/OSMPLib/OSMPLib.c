@@ -40,9 +40,8 @@ void debug(char* message, ...) {
 #endif
 }
 
-int error(char* msg, ...){
+void error(char* msg, ...){
     debug("ERROR: %s",msg);
-    return OSMP_ERROR;
 }
 
 int OSMP_Init(int *argc, char ***argv){
