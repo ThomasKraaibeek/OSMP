@@ -949,7 +949,6 @@ int test11(int argc, char** argv) {
             return OSMP_ERROR;
         }
     }
-
     if(OSMP_Test(myrequest, &flag) == OSMP_ERROR){
         free(myrequest);
         error("[osmpexecutable.c] Test11 OSMP_Test");
@@ -985,6 +984,7 @@ int test11(int argc, char** argv) {
     }
 
     printf("OSMP process %d received message: %d \n", rank, source);
+    
     if(OSMP_RemoveRequest(&myrequest)==OSMP_ERROR){
         error("[osmpexecitable.c] Test11 OSMP_RemoveRequest");
         free(myrequest);

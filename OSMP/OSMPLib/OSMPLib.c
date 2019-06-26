@@ -502,6 +502,7 @@ int OSMP_Test(OSMP_Request request, int *flag){
     IRequest *req = (IRequest*) request;
     if(sem_getvalue(&req->mutex, flag)) {
         error("[OSMPLib.c] request running in sem_getvalue");
+        return OSMP_ERROR;
     }
 
     debug("[OSMPLib.c] OSMP_Test - End");
@@ -528,6 +529,12 @@ int OSMP_Wait (OSMP_Request request){
         error("[OSMPLib.c] sem_wait");
         return OSMP_ERROR;
     }
+
+    if(sem_post(&req->mutex)){
+        error("[OSMPLib.c] sem_post");
+        return OSMP_ERROR;
+    }
+
 
     debug("[OSMPLib.c] OSMP_Wait - End");
     return OSMP_SUCCESS;
