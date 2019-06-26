@@ -16,66 +16,48 @@
  */
 int main(int argc, char** argv){
 
-    int rv = 0, size = 0, rank = 0, source, len;
-    char* bufin="Test Message";
-    char* bufout;
-    int out;
-    int in = 5;
-    //*in = 5;
+    int size, rank, source;
+    int bufin[2], bufout[2], len;
 
-    int osmp_int = OSMP_INT;
-    int osmp_char = OSMP_BYTE;
-    int flag;
-
-    rv = OSMP_Init(&argc,&argv);
-    rv = OSMP_Size(&size);
-    rv = OSMP_Rank(&rank);
-
-    OSMP_Request request;//= calloc(1, sizeof(IRequest));
-    rv = OSMP_CreateRequest(&request);
-
-    //rv = OSMP_Isend(bufin, 12, &osmp_char, rank, request);
-    rv = OSMP_Send(bufin, (int) strlen(bufin), &osmp_char, rank);
-    //rv = OSMP_Send(in, 1, &osmp_int, rank);
-
-
-    OSMP_Test(request, &flag);
-    printf("flag: %d\n", flag);
-    if(flag == 0){
-        //rv = OSMP_Wait(request);
+    if(OSMP_Init( &argc, &argv ) == OSMP_ERROR) {
+        error("[osmpexecutable.c] OSMP_Init");
+        return OSMP_ERROR;
     }
-    sleep(2);
+    if(OSMP_Size( &size ) == OSMP_ERROR) {
+        error("[osmpexecutable.c] OSMP_Size");
+        return OSMP_ERROR;
+    }
+    if(OSMP_Rank( &rank ) == OSMP_ERROR) {
+        error("[osmpexecutable.c] OSMP_Rank");
+        return OSMP_ERROR;
+    }
 
-    //rv = OSMP_RemoveRequest(request);
+    if(size != 2){
+        error("Invalid number of processes. 2 processes required.");
+        return OSMP_ERROR;
+    }
 
-
-    //rv = OSMP_CreateRequest(&request);
-    bufout = calloc(1,OSMP_MAX_PAYLOAD_LENGTH);
-    //rv = OSMP_Irecv(bufout, 12, &osmp_char, &source, &len, request);
-    rv = OSMP_Recv(bufout, 12, &osmp_char, &source, &len);
-    rv = OSMP_RemoveRequest(request);
-
-    printf("Recieved from %d : %s\n",source,bufout);
-
-    //OSMP_INT a = 5;
-    //OSMP_Test(a);
-
-    /*if(rank==0){
+    if( rank == 0 )
+    { // OSMP process 0
         bufin[0] = 4711;
         bufin[1] = 4712;
+        if(OSMP_Send( bufin, 2, OSMP_INT, 1 ) == OSMP_ERROR) {
+            error("[osmpexecutable.c] Test 00OSMP_Send");
+            return OSMP_ERROR;
+        }
+    }
+    else
+    { // OSMP process 1
+        if(OSMP_Recv( bufout, 2, OSMP_INT, &source, &len )==OSMP_ERROR){
+            error("[osmpexecutable.c] Test 00 OSMP_Recv");
+            return OSMP_ERROR;
+        }
+        printf("OSMP process %d received %d byte from %d [%d:%d] \n",rank, len, source, bufout[0], bufout[1]);
+    }
+    if(OSMP_Finalize()==OSMP_ERROR){
+        error("[osmpexecutable.c] Test 00 OSMP_Finalize");
+        return OSMP_ERROR;
+    }
 
-
-        rv = OSMP_Send(&in, 2, OSMP_INT, 1);
-
-    }else{
-        rv = OSMP_Recv(&out, 2, OSMP_INT, &source, &len);
-        printf("OUT: %d\n", out);
-        //printf("OSMP process %d received %d byte from %d [%d:%d] \n",rank, len, source, bufout[0], bufout[1]);
-    }*/
-
-    rv = OSMP_Finalize();
-    fflush(stdout);
-
-
-	return rv;
+    return OSMP_SUCCESS;
 }
