@@ -127,6 +127,16 @@ int test10(int argc, char** argv);
 int test11(int argc, char** argv);
 
 /**
+ * Isend-Irecv-Kommunikation zwischen exotischen Datentypen
+ * @param argc
+ * @param argv
+ * @return
+ */
+int test12(int argc, char** argv);
+
+
+
+/**
  * Ausführbare Datei, die von allen Prozessen geladen wird. Die Prozesse nutzen OSMPLib-Routinen um miteinander zu kommunizieren
  * @param argc Name dieser Datei
  * @param argv Alle Argumente, die auch dem OSMPStarter übergeben wurden

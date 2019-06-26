@@ -38,6 +38,7 @@ int main(int argc, char** argv) {
     else if(testnr==12) rv = test09(argc,argv);
     else if(testnr==13) rv = test10(argc,argv);
     else if(testnr==14) rv = test11(argc,argv);
+    else if(testnr==15) rv = test12(argc,argv);
     else{
         error("Not a valid test no. Choose between 0 and 12.");
     }
@@ -49,10 +50,10 @@ int main(int argc, char** argv) {
     return rv;
 }
 
-//Test-Nr 0
-int Send_Recv(int argc, char *argv[])
+//Test-Nr 0, 2 prozesse
+int Send_Recv(int argc, char **argv)
 {
-    int rv, size, rank, source;
+    int size, rank, source;
     int bufin[2], bufout[2], len;
     
     if(OSMP_Init( &argc, &argv ) == OSMP_ERROR) {
@@ -77,20 +78,29 @@ int Send_Recv(int argc, char *argv[])
     { // OSMP process 0
         bufin[0] = 4711;
         bufin[1] = 4712;
-        if(OSMP_Send( bufin, 2, OSMP_INT, 1 ) == OSMP_ERROR) error("[osmpexecutable.c] OSMP_Send");
+        if(OSMP_Send( bufin, 2, OSMP_INT, 1 ) == OSMP_ERROR) {
+            error("[osmpexecutable.c] Test 00OSMP_Send");
+            return OSMP_ERROR;
+        }
     }
     else
     { // OSMP process 1
-        rv = OSMP_Recv( bufout, 2, OSMP_INT, &source, &len );
+        if(OSMP_Recv( bufout, 2, OSMP_INT, &source, &len )==OSMP_ERROR){
+            error("[osmpexecutable.c] Test 00 OSMP_Recv");
+            return OSMP_ERROR;
+        }
         printf("OSMP process %d received %d byte from %d [%d:%d] \n",rank, len, source, bufout[0], bufout[1]);
     }
-    rv = OSMP_Finalize();
+    if(OSMP_Finalize()==OSMP_ERROR){
+        error("[osmpexecutable.c] Test 00 OSMP_Finalize");
+        return OSMP_ERROR;
+    }
 
-    return rv;
+    return OSMP_SUCCESS;
 }
 
-//Test-Nr 1
-int Send_Irecv(int argc, char *argv[])
+//Test-Nr 1, 2 prozesse
+int Send_Irecv(int argc, char **argv)
 {
     int size, rank, source, len;
     char *bufin, *bufout;
@@ -169,8 +179,8 @@ int Send_Irecv(int argc, char *argv[])
 }
 
 
-//Test-Nr 2
-int Isend_Irecv(int argc, char *argv[])
+//Test-Nr 2, 2 prozesse
+int Isend_Irecv(int argc, char **argv)
 {
     int size, rank, source, len, flag;
     char *bufin, *bufout;
@@ -277,8 +287,8 @@ int Isend_Irecv(int argc, char *argv[])
     return OSMP_SUCCESS;
 }
 
-//Test-Nr 3
-int Isend_Recv(int argc, char *argv[])
+//Test-Nr 3, 2 prozesse
+int Isend_Recv(int argc, char **argv)
 {
     int size, rank, source, len, flag;
     char *bufin, *bufout;
@@ -370,10 +380,10 @@ int Isend_Recv(int argc, char *argv[])
     }
     return OSMP_SUCCESS;
 }
-//Test-Nr 4
+//Test-Nr 4, 1 prozess
 int test01(int argc, char** argv){
 
-    int rv = OSMP_SUCCESS, size = 0, rank = 0, source, len;
+    int size = 0, rank = 0, source, len;
     char* bufin="Test Message";
     char* bufout;
     //*in = 5;
@@ -414,10 +424,10 @@ int test01(int argc, char** argv){
     fflush(stdout);
 
     free(bufout);
-    return rv;
+    return OSMP_SUCCESS;
 }
 
-//Test-Nr 5
+//Test-Nr 5, 2 prozesse
 int test02(int argc,char** argv){
 
 
@@ -488,7 +498,7 @@ int test02(int argc,char** argv){
     return OSMP_SUCCESS;
 }
 
-//Test-Nr 6
+//Test-Nr 6, 2 prozesse
 int test03(int argc, char** argv) {
 
     int size, rank, source, len;
@@ -540,7 +550,7 @@ int test03(int argc, char** argv) {
     return OSMP_SUCCESS;
 }
 
-//Test-Nr 7
+//Test-Nr 7, 2 prozesse
 int test04(int argc, char** argv) {
 
     int size, rank, source, len;
@@ -642,7 +652,7 @@ int test05(int argc, char** argv) {
     return OSMP_SUCCESS;
 }
 
-//Test-Nr 9
+//Test-Nr 9, 2 prozess
 int test06(int argc, char** argv){
 
     int size, rank, source, len, flag;
@@ -693,7 +703,7 @@ int test06(int argc, char** argv){
     return OSMP_SUCCESS;
 }
 
-//Test-Nr 10
+//Test-Nr 10, 1 prozess
 int test07(int argc, char** argv){
 
     int size, rank, flag;
@@ -749,7 +759,7 @@ int test07(int argc, char** argv){
     return OSMP_SUCCESS;
 }
 
-//Test-Nr 11  1 process
+//Test-Nr 11, 1 prozess
 int test08(int argc, char** argv){
 
     int size, rank, flag;
@@ -811,7 +821,7 @@ int test08(int argc, char** argv){
     return OSMP_SUCCESS;
 }
 
-//Test-Nr 12
+//Test-Nr 12, 2 prozesse
 int test09(int argc, char **argv)
 {
     printf("Test-Nr 09..\n");
@@ -864,7 +874,7 @@ int test09(int argc, char **argv)
     return OSMP_SUCCESS;
 }
 
-//Test-Nr 13
+//Test-Nr 13, n prozesse
 int test10(int argc, char** argv) {
 
     int size, rank, source, len;
@@ -909,7 +919,7 @@ int test10(int argc, char** argv) {
     return OSMP_SUCCESS;
 }
 
-//Test-Nr 14
+//Test-Nr 14, n prozesse
 int test11(int argc, char** argv) {
 
     int size, rank, source, len;
@@ -984,7 +994,7 @@ int test11(int argc, char** argv) {
     }
 
     printf("OSMP process %d received message: %d \n", rank, source);
-    
+
     if(OSMP_RemoveRequest(&myrequest)==OSMP_ERROR){
         error("[osmpexecitable.c] Test11 OSMP_RemoveRequest");
         free(myrequest);
@@ -993,6 +1003,74 @@ int test11(int argc, char** argv) {
 
     if(OSMP_Finalize()==OSMP_ERROR){
         error("[osmpexecutable.c] Test11 OSMP_Finalize");
+        return OSMP_ERROR;
+    }
+
+    return OSMP_SUCCESS;
+}
+
+//Test Nr. 15, 3 prozesse
+int test12(int argc, char **argv)
+{
+    int size, rank, source, len;
+    unsigned short bufin[8], bufout[8];
+    
+    if(OSMP_Init( &argc, &argv ) == OSMP_ERROR) {
+        error("[osmpexecutable.c] OSMP_Init");
+        return OSMP_ERROR;
+    }
+    if(OSMP_Size( &size ) == OSMP_ERROR) {
+        error("[osmpexecutable.c] OSMP_Size");
+        return OSMP_ERROR;
+    }
+    if(OSMP_Rank( &rank ) == OSMP_ERROR) {
+        error("[osmpexecutable.c] OSMP_Rank");
+        return OSMP_ERROR;
+    }
+
+    if(size != 3){
+        error("Invalid number of processes. 2 processes required.");
+        return OSMP_ERROR;
+    }
+
+    if( rank == 0 )
+    { // OSMP process 0
+        for(int i = 0;i<8;i++){
+            bufin[i] = (unsigned short) i;
+        }
+        if(OSMP_Send( bufin, 8, OSMP_UNSIGNED_SHORT, 1 ) == OSMP_ERROR) {
+            error("[osmpexecutable.c] Test 12 OSMP_Send");
+            return OSMP_ERROR;
+        }
+    }
+    else if(rank==2){
+        for(int i = 7;i>=0;i--){
+            bufin[7-i] = (unsigned short) i;
+        }
+        if(OSMP_Send( bufin, 8, OSMP_UNSIGNED_SHORT, 1 ) == OSMP_ERROR) {
+            error("[osmpexecutable.c] Test 12 OSMP_Send");
+            return OSMP_ERROR;
+        }
+    }
+    else if(rank==1)
+    { // OSMP process 1
+        if(OSMP_Recv( bufout, 8, OSMP_UNSIGNED_SHORT, &source, &len )==OSMP_ERROR){
+            error("[osmpexecutable.c] Test 12 OSMP_Recv");
+            return OSMP_ERROR;
+        }
+        for(int i = 0;i<8;i++){
+            printf("OSMP process %d received %d byte from %d [%hu] \n",rank, len, source, bufout[i]);
+        }
+        if(OSMP_Recv( bufout, 8, OSMP_UNSIGNED_SHORT, &source, &len )==OSMP_ERROR){
+            error("[osmpexecutable.c] Test 12 OSMP_Recv");
+            return OSMP_ERROR;
+        }
+        for(int i = 0;i<8;i++){
+            printf("OSMP process %d received %d byte from %d [%hu] \n",rank, len, source, bufout[i]);
+        }
+    }
+    if(OSMP_Finalize()==OSMP_ERROR){
+        error("[osmpexecutable.c] Test 12 OSMP_Finalize");
         return OSMP_ERROR;
     }
 

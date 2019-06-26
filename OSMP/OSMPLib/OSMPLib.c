@@ -22,9 +22,8 @@ typedef struct {
 
 //SHM Struct
 shm* shm_start;
-sem_t mutex;
-sem_t emptyslots;
 
+// Name des shared memory. Wird nach Starterprozesspid benannt
 char* shmname;
 int processes = 0, rank = 0;
 
@@ -47,6 +46,7 @@ void error(char* msg, ...){
 int OSMP_Init(int *argc, char ***argv){
     debug("[OSMPLib.c] OSMP_Init - Start");
 
+    // Hole parent pid und ermittle damit den Namen des zu benutzenden shared memorys
     pid_t ppid = getppid();
     char* itospid = itos(ppid);
 
@@ -63,6 +63,7 @@ int OSMP_Init(int *argc, char ***argv){
         return OSMP_ERROR;
     }
 
+    // Baue den Namen des shared memorys zusammen
     if(sprintf(shmname,"myshm_%s",itospid) < 0) {
         error("[OSMPLib.c] OSMP_Init sprintf shm_name");
         free(itospid);
@@ -94,6 +95,7 @@ int OSMP_Init(int *argc, char ***argv){
         return OSMP_ERROR;
     }
 
+    // Groesse des shared memorys, um Anzahl der Prozesse zu berechnen
     size_t shm_size = (size_t) shm_stat->st_size;
     free(shm_stat);
 
@@ -116,18 +118,17 @@ int OSMP_Init(int *argc, char ***argv){
 
 int OSMP_DataSize(OSMP_Datatype datatype){
 
-    int type =  datatype;
-    if(type == 0) return sizeof(int);
-    else if(type == 1) return sizeof(short);
-    else if(type == 2) return sizeof(long);
-    else if(type == 3) return sizeof(char);
-    else if(type == 4) return sizeof(unsigned char);
-    else if(type == 5) return sizeof(unsigned short);
-    else if(type == 6) return sizeof(unsigned);
-    else if(type == 7) return sizeof(float);
-    else if(type == 8) return sizeof(double);
+    if(datatype == 0) return sizeof(int);
+    else if(datatype == 1) return sizeof(short);
+    else if(datatype == 2) return sizeof(long);
+    else if(datatype == 3) return sizeof(char);
+    else if(datatype == 4) return sizeof(unsigned char);
+    else if(datatype == 5) return sizeof(unsigned short);
+    else if(datatype == 6) return sizeof(unsigned);
+    else if(datatype == 7) return sizeof(float);
+    else if(datatype == 8) return sizeof(double);
 
-    return 0;
+    return OSMP_ERROR;
 }
 
 
@@ -211,11 +212,18 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
         error("[OSMPLib.c] OSMP_Send sem_post Error");
         return OSMP_ERROR;
     }
+
+    // Berechne Groesse des Datentypes
+    int datasize = OSMP_DataSize(datatype);
+    if(datasize==-1){
+        error("[OSMPLib.c] OSMP_Send OSMP_DataSize returned -1");
+        return OSMP_ERROR;
+    }
     
-    size_t actualLen = (size_t) (count*OSMP_DataSize(datatype));
+    size_t actualLen = (size_t) (count*datasize);
     //Länge größer als maximal erlaubte Länge? Info an den Nutzer, dass Nachricht abgeschnitten wird.
-    if((count*OSMP_DataSize(datatype)) > OSMP_MAX_PAYLOAD_LENGTH){
-        debug("[osmplib.c] OSMP_Send data bigger than OSMP_MAX_PAYLOAD_LENGTH. Message len: %d bytes. Cutting off after %d bytes.",(count*OSMP_DataSize(datatype)),OSMP_MAX_PAYLOAD_LENGTH);
+    if((count*datasize) > OSMP_MAX_PAYLOAD_LENGTH){
+        debug("[osmplib.c] OSMP_Send data bigger than OSMP_MAX_PAYLOAD_LENGTH. Message len: %d bytes. Cutting off after %d bytes.",(count*datasize),OSMP_MAX_PAYLOAD_LENGTH);
         actualLen = OSMP_MAX_PAYLOAD_LENGTH;
     } 
 
@@ -290,10 +298,15 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
 
     *source = shm_start->msg[first].src;
     *len = (int) shm_start->msg[first].len;
+    int datasize = OSMP_DataSize(datatype);
+    if(datasize==-1){
+        error("[OSMPLib.c] OSMP_Send OSMP_DataSize returned -1");
+        return OSMP_ERROR;
+    }
     //Länge größer als maximal erlaubte Länge? Info an den Nutzer, dass Nachricht abgeschnitten wird.
-    if(*len>OSMP_MAX_PAYLOAD_LENGTH ||*len > count*OSMP_DataSize(datatype) ){
-        debug("[osmplib.c] OSMP_Recv data bigger than OSMP_MAX_PAYLOAD_LENGTH OR accepted size of reciever (%d). Cutting off. Message len: %d bytes", count*OSMP_DataSize(datatype),*len);
-        *len = ((count*OSMP_DataSize(datatype))<OSMP_MAX_PAYLOAD_LENGTH) ? (count*OSMP_DataSize(datatype)) : OSMP_MAX_PAYLOAD_LENGTH;
+    if(*len>OSMP_MAX_PAYLOAD_LENGTH ||*len > count*datatype ){
+        debug("[osmplib.c] OSMP_Recv data bigger than OSMP_MAX_PAYLOAD_LENGTH OR accepted size of reciever (%d). Cutting off. Message len: %d bytes", count*datasize,*len);
+        *len = ((count*datasize)<OSMP_MAX_PAYLOAD_LENGTH) ? (count*datasize) : OSMP_MAX_PAYLOAD_LENGTH;
     }
 
     memcpy(buf, shm_start->msg[first].data, (size_t)*len);
@@ -323,7 +336,6 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
 
     debug("[OSMPLib.c] OSMP_Recv - End");
     return OSMP_SUCCESS;
-
 }
 
 int OSMP_Finalize(void){
