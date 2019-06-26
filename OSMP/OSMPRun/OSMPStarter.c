@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
         free(shmname);
         return OSMP_ERROR;
     }
-    shm_start = NULL;
+    //shm_start = NULL;
     debug("[OSMPStarter.c] Unlinking SHM successful");
 
     free(shmname);

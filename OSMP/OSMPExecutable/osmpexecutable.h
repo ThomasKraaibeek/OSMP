@@ -5,9 +5,6 @@
 #ifndef OSMP_OSMPEXECUTABLE2_H
 #define OSMP_OSMPEXECUTABLE2_H
 
-int osmp_int = OSMP_INT;
-int osmp_char = OSMP_BYTE;
-int osmp_double = OSMP_DOUBLE;
 
 /**
  * Send-Recv-Kommunikation zwischen zwei Prozessen

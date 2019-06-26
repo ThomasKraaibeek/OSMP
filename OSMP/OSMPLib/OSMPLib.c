@@ -116,16 +116,16 @@ int OSMP_Init(int *argc, char ***argv){
 
 int OSMP_DataSize(OSMP_Datatype datatype){
 
-    int* type = (int*) datatype;
-    if(*type == 0) return sizeof(int);
-    else if(*type == 1) return sizeof(short);
-    else if(*type == 2) return sizeof(long);
-    else if(*type == 3) return sizeof(char);
-    else if(*type == 4) return sizeof(unsigned char);
-    else if(*type == 5) return sizeof(unsigned short);
-    else if(*type == 6) return sizeof(unsigned);
-    else if(*type == 7) return sizeof(float);
-    else if(*type == 8) return sizeof(double);
+    int type =  datatype;
+    if(type == 0) return sizeof(int);
+    else if(type == 1) return sizeof(short);
+    else if(type == 2) return sizeof(long);
+    else if(type == 3) return sizeof(char);
+    else if(type == 4) return sizeof(unsigned char);
+    else if(type == 5) return sizeof(unsigned short);
+    else if(type == 6) return sizeof(unsigned);
+    else if(type == 7) return sizeof(float);
+    else if(type == 8) return sizeof(double);
 
     return 0;
 }
@@ -362,16 +362,10 @@ int OSMP_Finalize(void){
 
     //printf("rechnung: %d", sizeof(process) + OSMP_MAX_SLOTS * sizeof(message) + processes * sizeof(process));
 
-    /*if(i==processes){
-        debug("[OSMPLib.c] OSMP_Finalize Unlinking SHM with process of Rank: %d\n",rank);
-        rv=shm_unlink(shmname);
-        if(rv==OSMP_ERROR){
-            error("[OSMPLib.c] OSMP_Finalize Unlinking SHM failed");
-            return OSMP_ERROR;
-        }
-        shm_start=NULL;
-    */
-
+    if(i==processes){
+        debug("[OSMPLib.c] OSMP_Finalize NULLing SHM with process of Rank: %d\n",rank);
+        shm_start=NULL;    
+    }
     debug("[OSMPLib.c] OSMP_Finalize - End");
     return OSMP_SUCCESS;
 }
@@ -565,7 +559,7 @@ int OSMP_CreateRequest(OSMP_Request *request){
     req->source = NULL;
     req->dest = 0;
     req->count = 0;
-    req->type = NULL;
+    req->type = -1;
 
     *request = req;
 
