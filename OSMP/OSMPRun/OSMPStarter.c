@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
     //konvertiere string in int
     int inputprocessAmount = atoi(argv[1]);
     if (inputprocessAmount > 150 || inputprocessAmount < 0) {
-        error("[OSMPStarter.c] Anzahl der Prozesse muss zwischen 1 und 300 liegen\n");
+        error("[OSMPStarter.c] Anzahl der Prozesse muss zwischen 1 und 150 liegen\n");
         return OSMP_ERROR;
     }
 
