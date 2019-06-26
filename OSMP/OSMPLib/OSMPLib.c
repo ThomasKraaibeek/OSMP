@@ -95,7 +95,7 @@ int OSMP_Init(int *argc, char ***argv){
         return OSMP_ERROR;
     }
 
-    // Groesse des shared memorys, um Anzahl der Prozesse zu berechnen
+    // Größe des shared memorys, um Anzahl der Prozesse zu berechnen
     size_t shm_size = (size_t) shm_stat->st_size;
     free(shm_stat);
 
@@ -213,9 +213,9 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
         return OSMP_ERROR;
     }
 
-    // Berechne Groesse des Datentypes
+    // Berechne Größe des Datentypes
     int datasize = OSMP_DataSize(datatype);
-    if(datasize==-1){
+    if(datasize == -1){
         error("[OSMPLib.c] OSMP_Send OSMP_DataSize returned -1");
         return OSMP_ERROR;
     }
@@ -227,6 +227,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
         actualLen = OSMP_MAX_PAYLOAD_LENGTH;
     } 
 
+    //Setze Attribute einer leeren message slot auf die Werte des Senders
     shm_start->msg[first].len = actualLen;
     shm_start->msg[first].type = datatype;
     shm_start->msg[first].src = rank;
@@ -248,6 +249,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
         shm_start->msg[last].nextmsg = first;
     }
 
+    // Hänge die befüllte message slot an die messages des empfangenden Prozesses
     shm_start->p[dest].lastmsg = first;
 
     if(sem_post(&shm_start->p[dest].mutex)) {
@@ -298,13 +300,16 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype,  int *source, int *l
 
     *source = shm_start->msg[first].src;
     *len = (int) shm_start->msg[first].len;
+
+    // Berechne die Größe des Datentypes
     int datasize = OSMP_DataSize(datatype);
-    if(datasize==-1){
+    if(datasize == -1){
         error("[OSMPLib.c] OSMP_Send OSMP_DataSize returned -1");
         return OSMP_ERROR;
     }
+
     //Länge größer als maximal erlaubte Länge? Info an den Nutzer, dass Nachricht abgeschnitten wird.
-    if(*len>OSMP_MAX_PAYLOAD_LENGTH ||*len > count*datatype ){
+    if(*len>OSMP_MAX_PAYLOAD_LENGTH ||*len > count*datasize){
         debug("[osmplib.c] OSMP_Recv data bigger than OSMP_MAX_PAYLOAD_LENGTH OR accepted size of reciever (%d). Cutting off. Message len: %d bytes", count*datasize,*len);
         *len = ((count*datasize)<OSMP_MAX_PAYLOAD_LENGTH) ? (count*datasize) : OSMP_MAX_PAYLOAD_LENGTH;
     }
@@ -347,6 +352,7 @@ int OSMP_Finalize(void){
         return OSMP_ERROR;
     }
 
+    // Setze Atrribute des aktuellen Prozesses in der Struktur zurück
     if(shm_start->p[rank].pid == getpid()){
         shm_start->p[rank].pid = -1;
         shm_start->p[rank].firstmsg = -1;
@@ -362,11 +368,13 @@ int OSMP_Finalize(void){
         i++;
     }
 
+    // Falls der aktuelle Prozess der letzte ist, setze die empty message slots zurück
     if(i == processes){
         shm_start->emptymsg.firstmsg = -1;
         shm_start->emptymsg.lastmsg = -1;
     }
 
+    // unmappe den shared memory vom aktuellen Prozess
     if(munmap(shm_start, (sizeof(process) + OSMP_MAX_SLOTS * sizeof(message) + (unsigned int) processes * sizeof(process))) == OSMP_ERROR){
         error("[OSMPLib.c] OSMP_Finalize munmap failed");
         return OSMP_ERROR;
@@ -374,6 +382,7 @@ int OSMP_Finalize(void){
 
     //printf("rechnung: %d", sizeof(process) + OSMP_MAX_SLOTS * sizeof(message) + processes * sizeof(process));
 
+    // Falls der aktuelle Prozess der letzte ist, setze den shm_start auf NULL
     if(i==processes){
         debug("[OSMPLib.c] OSMP_Finalize NULLing SHM with process of Rank: %d\n",rank);
         shm_start=NULL;    
@@ -384,7 +393,9 @@ int OSMP_Finalize(void){
 
 void* t_send(void *request){
     IRequest *req = (IRequest *) request;
-    OSMP_Send(req->buffer,req->count,req->type,req->dest);
+    if(OSMP_Send(req->buffer,req->count,req->type,req->dest) == OSMP_ERROR){
+        error("[OSMPLib.c] t_send OSMP_Send failed");
+    }
     if(sem_post(&req->mutex) == -1) {
         error("[OSMPLib.c] t_send sem_post");
         return 0;
@@ -394,7 +405,9 @@ void* t_send(void *request){
 
 void* t_recv(void *request){
     IRequest *req = (IRequest *) request;
-    OSMP_Recv(req->buffer,req->count,req->type,req->source,req->length);
+    if(OSMP_Recv(req->buffer,req->count,req->type,req->source,req->length) == OSMP_ERROR){
+        error("[OSMPLib.c] t_recv OSMP_Recv failed");
+    }
     if(sem_post(&req->mutex) == -1) {
         error("[OSMPLib.c] t_recv sem_post");
         return 0;
@@ -632,6 +645,7 @@ char* itos(int value) {
         return NULL;
     }
 
+    // Konvertiere in int
     if(sprintf(string, "%d", value) < 0){
         free(string);
         error("[OSMPLib.c] itos sprintf");
