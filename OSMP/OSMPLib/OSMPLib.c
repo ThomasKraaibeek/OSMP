@@ -178,7 +178,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest) {
         error("[OSMPLib.c] OSMP_Send buf null");
         return OSMP_ERROR;
     }
-    if(dest >= processes){
+    if(dest >= processes || dest < 0){
         debug("[OSMPLib.c] OSMP_Send Destination unreachable. %d not a valid OSMP_Process no.",dest);
         return OSMP_ERROR;
     }
@@ -433,7 +433,7 @@ int OSMP_Isend(const void *buf, int count, OSMP_Datatype datatype, int dest, OSM
         return OSMP_ERROR;
     }
 
-    if(dest >= processes){
+    if(dest >= processes || dest < 0){
         debug("[OSMPLib.c] OSMP_Send Destination unreachable. %d not a valid OSMP_Process no.",dest);
         return OSMP_ERROR;
     }

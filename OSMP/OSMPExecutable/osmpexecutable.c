@@ -1032,7 +1032,7 @@ int test12(int argc, char **argv)
     }
 
     if(size != 3){
-        error("Invalid number of processes. 2 processes required.");
+        error("Invalid number of processes. 3 processes required.");
         return OSMP_ERROR;
     }
 
