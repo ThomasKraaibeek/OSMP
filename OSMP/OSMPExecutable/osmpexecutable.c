@@ -41,6 +41,7 @@ int main(int argc, char** argv) {
     else if(testnr==14) rv = test11(argc,argv);
     else if(testnr==15) rv = test12(argc,argv);
     else if(testnr==16) rv = test13(argc,argv);
+    else if(testnr==17) rv = Send_Irecv_NotInit(argc,argv);
     else{
         error("Not a valid test no. Choose between 0 and 12.");
     }
@@ -148,16 +149,26 @@ int Send_Irecv(int argc, char **argv)
             error("[osmpexecutable.c] Test 1 malloc");
             return OSMP_ERROR;
         }
+
         if(OSMP_CreateRequest( &myrequest )==OSMP_ERROR){
             free(bufout);
             error("[osmpexecutable.c] Test 1 OSMP_CreateRequest");
             return OSMP_ERROR;
         }
+
         if(OSMP_Irecv( bufout, strlen("hello world")+1, OSMP_BYTE, &source, &len, myrequest )==OSMP_ERROR){
             free(bufout);
-            error("[osmpexecutable.c] Test 1 OSMP_ISend");
+            error("[osmpexecutable.c] Test 1 OSMP_IRecv");
             return OSMP_ERROR;
         }
+
+        if(getRV(myrequest)==OSMP_ERROR){
+            free(bufout);
+            error("[osmpexecutable.c] Test 1 t_recv");
+            return OSMP_ERROR;
+        }
+
+        //printf("getrv: %d\n", getRV(myrequest));
 
         if(OSMP_Wait( myrequest )==OSMP_ERROR){
             free(bufout);
@@ -1208,5 +1219,95 @@ int test13(int argc, char **argv)
         error("[osmpexecutable.c] Test 3 OSMP_Finalize");
         return OSMP_ERROR;
     }
+    return OSMP_SUCCESS;
+}
+
+//Test-Nr 17, 2 prozesse
+int Send_Irecv_NotInit(int argc, char **argv)
+{
+    int size, rank, source, len;
+    char *bufin, *bufout;
+    OSMP_Request myrequest = NULL;
+
+    if(OSMP_Init( &argc, &argv ) == OSMP_ERROR) {
+        error("[osmpexecutable.c] OSMP_Init");
+        return OSMP_ERROR;
+    }
+    if(OSMP_Size( &size ) == OSMP_ERROR) {
+        error("[osmpexecutable.c] OSMP_Size");
+        return OSMP_ERROR;
+    }
+    if(OSMP_Rank( &rank ) == OSMP_ERROR) {
+        error("[osmpexecutable.c] OSMP_Rank");
+        return OSMP_ERROR;
+    }
+
+    if(size != 2){
+        error("Invalid number of processes. 2 processes required.");
+        return OSMP_ERROR;
+    }
+
+    if( rank == 0 )
+    { // OSMP process 0
+        bufin = malloc(strlen("hello world") + 1); // check for != NULL
+        if(bufin==NULL) {
+            error("[osmpexecutable.c] Test 1 malloc");
+            return OSMP_ERROR;
+        }
+        strncpy(bufin, "hello world",strlen("hello world")+1);
+        if(OSMP_Send( bufin, strlen("hello world")+1, OSMP_BYTE, 1 )==OSMP_ERROR){
+            error("[osmpexecutable.c] Test 1 OSMP_Send");
+            free(bufin);
+            return OSMP_ERROR;
+        }
+        free(bufin);
+    }
+    else
+    { // OSMP process 1
+        bufout = malloc(strlen("hello world")+1); // check for != NULL
+        if(bufout==NULL){
+            error("[osmpexecutable.c] Test 1 malloc");
+            return OSMP_ERROR;
+        }
+        if(OSMP_Wait( myrequest )==OSMP_ERROR){
+            error("[osmpexecutable.c] Test 1 OSMP_Wait");
+            return OSMP_ERROR;
+        }
+        if(OSMP_CreateRequest( &myrequest )==OSMP_ERROR){
+            free(bufout);
+            error("[osmpexecutable.c] Test 1 OSMP_CreateRequest");
+            return OSMP_ERROR;
+        }
+
+        if(OSMP_Irecv( bufout, strlen("hello world")+1, OSMP_BYTE, &source, &len, myrequest )==OSMP_ERROR){
+            free(bufout);
+            error("[osmpexecutable.c] Test 1 OSMP_IRecv");
+            return OSMP_ERROR;
+        }
+
+        if(getRV(myrequest)==OSMP_ERROR){
+            free(bufout);
+            error("[osmpexecutable.c] Test 1 t_recv");
+            return OSMP_ERROR;
+        }
+
+        if(OSMP_Wait( myrequest )==OSMP_ERROR){
+            free(bufout);
+            error("[osmpexecutable.c] Test 1 OSMP_Wait");
+            return OSMP_ERROR;
+        }
+        printf("OSMP process %d received message: %s \n", rank, bufout);
+        if(OSMP_RemoveRequest( &myrequest )==OSMP_ERROR){
+            free(bufout);
+            error("[osmpexecutable.c] Test 1 OSMP_RemoveRequest");
+            return OSMP_ERROR;
+        }
+        free(bufout);
+    }
+    if(OSMP_Finalize()==OSMP_ERROR){
+        error("[osmpexecutable.c] Test 1 OSMP_Finalize");
+        return OSMP_ERROR;
+    };
+
     return OSMP_SUCCESS;
 }

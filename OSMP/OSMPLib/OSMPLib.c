@@ -18,6 +18,8 @@ typedef struct {
     int dest;
     int count;
     sem_t mutex;
+    int rv;
+    int alive;
 } IRequest;
 
 //SHM Struct
@@ -357,6 +359,11 @@ int OSMP_Finalize(void){
         shm_start->p[rank].pid = -1;
         shm_start->p[rank].firstmsg = -1;
         shm_start->p[rank].lastmsg = -1;
+
+        if(sem_destroy(&shm_start->p[rank].mutex)){
+            error("[OSMPLib.c] OSMP_Finalize sem_destroy");
+            return OSMP_ERROR;
+        }
     }
 
     int i = 0;
@@ -393,9 +400,8 @@ int OSMP_Finalize(void){
 
 void* t_send(void *request){
     IRequest *req = (IRequest *) request;
-    if(OSMP_Send(req->buffer,req->count,req->type,req->dest) == OSMP_ERROR){
-        error("[OSMPLib.c] t_send OSMP_Send failed");
-    }
+    req->rv = OSMP_Send(req->buffer,req->count,req->type,req->dest);
+
     if(sem_post(&req->mutex) == -1) {
         error("[OSMPLib.c] t_send sem_post");
         return 0;
@@ -405,9 +411,7 @@ void* t_send(void *request){
 
 void* t_recv(void *request){
     IRequest *req = (IRequest *) request;
-    if(OSMP_Recv(req->buffer,req->count,req->type,req->source,req->length) == OSMP_ERROR){
-        error("[OSMPLib.c] t_recv OSMP_Recv failed");
-    }
+    req->rv = OSMP_Recv(req->buffer,req->count,req->type,req->source,req->length);
     if(sem_post(&req->mutex) == -1) {
         error("[OSMPLib.c] t_recv sem_post");
         return 0;
@@ -524,6 +528,16 @@ int OSMP_Test(OSMP_Request request, int *flag){
         return OSMP_ERROR;
     }
 
+    if(request == NULL){
+        error("[OSMPLib.c] OSMP_Request null");
+        return OSMP_ERROR;
+    }
+
+    if(flag == NULL){
+        error("[flagnull");
+        return OSMP_ERROR;
+    }
+
     IRequest *req = (IRequest*) request;
     if(sem_getvalue(&req->mutex, flag)) {
         error("[OSMPLib.c] request running in sem_getvalue");
@@ -550,6 +564,13 @@ int OSMP_Wait (OSMP_Request request){
     }
 
     IRequest *req = (IRequest*) request;
+
+    //-----
+    /*if(req->alive==0 || !(&req->alive) || req==NULL ){
+        return OSMP_ERROR;
+    }*/
+    //------
+
     if(sem_wait(&req->mutex)){
         error("[OSMPLib.c] sem_wait");
         return OSMP_ERROR;
@@ -592,6 +613,8 @@ int OSMP_CreateRequest(OSMP_Request *request){
     req->dest = 0;
     req->count = 0;
     req->type = -1;
+    req->rv = OSMP_ERROR;
+    req->alive = 1; // 1 = alive, 0 = dead
 
     *request = req;
 
@@ -630,11 +653,28 @@ int OSMP_RemoveRequest(OSMP_Request *request){
         error("[OSMPLib.c] OSMP_RemoveRequest sem_destroy");
         return OSMP_ERROR;
     }
-
+    req->alive=0;
     free(req);
     //free(request);
     debug("[OSMPLib.c] OSMP_RemoveRequest - End");
     return OSMP_SUCCESS;
+}
+
+int getRV(OSMP_Request *request){
+
+    if(shm_start == NULL){
+        error("[OSMPLib.c] SHM not initialized");
+        return OSMP_ERROR;
+    }
+
+    if(request == NULL){
+        error("[OSMPLib.c] OSMP_Request null");
+        return OSMP_ERROR;
+    }
+
+    IRequest *req = (IRequest*) *request;
+
+    return req->rv;
 }
 
 char* itos(int value) {

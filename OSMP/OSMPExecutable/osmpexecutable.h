@@ -142,6 +142,16 @@ int test12(int argc, char** argv);
  */
 int test13(int argc, char** argv);
 
+/** Test 17
+ * Request wird ohne Create_Request verwendet
+ * @param argc
+ * @param argv
+ * @return
+ */
+int Send_Irecv_NotInit(int argc, char **argv);
+
+int getRV(OSMP_Request *request);
+
 
 /**
  * Ausführbare Datei, die von allen Prozessen geladen wird. Die Prozesse nutzen OSMPLib-Routinen um miteinander zu kommunizieren
